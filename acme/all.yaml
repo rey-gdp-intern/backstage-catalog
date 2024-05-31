@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
   name: acme
-  description: A collection of all acme
+  description: A collection of all group and users
 spec:
   targets:
-    - ./sre.yaml
+    - ./group/all.yaml
