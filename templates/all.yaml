@@ -6,6 +6,4 @@ metadata:
 spec:
   type: url
   targets:
-    - https://github.com/organisasi-bawah-tanah/backstage-project-templates/blob/main/django/template.yml
-    - https://github.com/organisasi-bawah-tanah/backstage-project-templates/blob/main/springboot-jenkins/template.yml
-    - https://github.com/organisasi-bawah-tanah/backstage-project-templates/blob/main/springboot/template.yml
+    - ./golang/template.yaml
