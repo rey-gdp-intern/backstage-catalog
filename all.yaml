@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: all
+  description: All backstage collections
+spec:
+  targets:
+    - ./acme/all.yaml
