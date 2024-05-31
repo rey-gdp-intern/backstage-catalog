@@ -16,10 +16,10 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: reyshazni
-  description: "GitHub user reyshazni"
+  provider: "Github"
 spec:
   profile:
-    displayName: "Reyshazni"
+    displayName: "Rey Shazni"
     email: "reyshazni@gmail.com"
     picture: "https://github.com/reyshazni.png"
   memberOf: [sre]
