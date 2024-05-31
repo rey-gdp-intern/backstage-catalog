@@ -6,3 +6,4 @@ metadata:
 spec:
   targets:
     - ./acme/all.yaml
+    - ./templates/all.yaml
