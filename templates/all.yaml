@@ -7,3 +7,4 @@ spec:
   type: url
   targets:
     - ./golang/template.yaml
+    - ./next/template.yaml

@@ -2,7 +2,9 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{ values.name | dump }}
+  annotations:
+    github.com/project-slug: 'template/go-test'
 spec:
   type: service
-  owner: user:guest
+  owner: user:sre
   lifecycle: experimental
