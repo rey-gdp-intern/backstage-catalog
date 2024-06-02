@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{ values.name | dump }}
+  annotations:
+    github.com/project-slug: 'template/next-test'
+spec:
+  type: service
+  owner: user:sre
+  lifecycle: experimental
