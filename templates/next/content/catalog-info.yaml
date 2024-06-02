@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: ${{ values.name | dump }}
   annotations:
-    github.com/project-slug: 'template/next-test'
+    github.com/project-slug: 'rey-gdp-intern/test-next'
 spec:
   type: service
   owner: user:sre
