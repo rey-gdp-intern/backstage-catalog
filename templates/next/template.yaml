@@ -48,10 +48,10 @@ spec:
 
     - id: create-gcb-trigger
       name: Create GCB Trigger
-      action: http:backstage:request
+      action: http:backstage:request 
       input:
         method: 'POST'
-        path: '/api/proxy/gcb/v1/projects/${{ parameters.projectId }}/triggers'
+        path: '/proxy/gcb/v1/projects/${{ parameters.projectId }}/triggers'
         headers:
           Content-Type: 'application/json'
         body:
