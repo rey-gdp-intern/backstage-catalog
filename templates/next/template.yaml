@@ -1,32 +1,27 @@
 apiVersion: scaffolder.backstage.io/v1beta3
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
   name: next-template
-  title: next template
-  description: Template for simple next service
+  title: Next Template
+  description: Template for simple Next.js service
 spec:
   owner: user:guest
   type: service
-
-  # These parameters are used to generate the input form in the frontend, and are
-  # used to gather input data for the execution of the template.
   parameters:
     - title: Fill in some steps
       required:
         - name
+        - projectId
       properties:
         name:
           title: Name
           type: string
           description: Unique name of the component
           ui:autofocus: true
-          ui:options:
-            rows: 5
-    - title: Choose a location
-      required:
-        - repoUrl
-      properties:
+        projectId:
+          title: GCP Project ID
+          type: string
+          description: Your Google Cloud Project ID
         repoUrl:
           title: Repository Location
           type: string
@@ -34,11 +29,7 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
-
-  # These steps are executed in the scaffolder backend, using data that we gathered
-  # via the parameters above.
   steps:
-    # Each step executes an action, in this case one templates files into the working directory.
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
@@ -47,7 +38,6 @@ spec:
         values:
           name: ${{ parameters.name }}
 
-    # This step publishes the contents of the working directory to GitHub.
     - id: publish
       name: Publish
       action: publish:github
@@ -55,14 +45,6 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
-
-    # The final step is to register our new component in the catalog.
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
 
     - id: create-gcb-trigger
       name: Create GCB Trigger
@@ -115,7 +97,6 @@ spec:
               _CLUSTER: sandbox
               _ZONE: asia-southeast2-a
 
-  # Outputs are displayed to the user after a successful execution of the template.
   output:
     links:
       - title: Repository
