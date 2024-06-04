@@ -46,7 +46,7 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
 
-    - id: create-gcb-trigger
+        - id: create-gcb-trigger
       name: Create GCB Trigger
       action: http:backstage:request 
       input:
@@ -58,8 +58,8 @@ spec:
           name: '${{ parameters.name }}-trigger'
           description: 'Automatically created trigger from Backstage template'
           github:
-            name: ${{ parameters.repoUrl.split('/').pop().replace('.git', '') }}
-            owner: ${{ parameters.repoUrl.split('/')[3] }}
+            name: '${{ parameters.repoUrl.split('/').pop().replace(".git", "") }}'
+            owner: '${{ parameters.repoUrl.split("/")[3] }}'
             push:
               branch: 'main'
           build:
@@ -92,10 +92,11 @@ spec:
                 waitFor:
                   - "Push"
             substitutions:
-              _REGISTRY_URL: docker.io/reyshazni
-              _PROJECT: intern-infra
-              _CLUSTER: sandbox
-              _ZONE: asia-southeast2-a
+              _REGISTRY_URL: 'docker.io/reyshazni'
+              _PROJECT: 'intern-infra'
+              _CLUSTER: 'sandbox'
+              _ZONE: 'asia-southeast2-a'
+
 
     - id: register
       name: Register
