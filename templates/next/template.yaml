@@ -52,8 +52,8 @@ spec:
       input:
         method: 'POST'
         path: '/proxy/gcb/v1/projects/${{ parameters.projectId }}/triggers'
-        headers:
-          Content-Type: 'application/json'
+        # headers:
+        #   Content-Type: 'application/json'
         body:
           name: '${{ parameters.name }}-trigger'
           description: 'Automatically created trigger from Backstage template'
