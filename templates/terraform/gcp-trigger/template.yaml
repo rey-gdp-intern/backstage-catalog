@@ -15,7 +15,6 @@ spec:
         - repoName
         - repoOwner
         - branchName
-        - commitSha
       properties:
         triggerName:
           title: Trigger Name
@@ -37,10 +36,6 @@ spec:
           title: Branch Name
           type: string
           description: Branch name to trigger the build
-        commitSha:
-          title: Commit SHA
-          type: string
-          description: Commit SHA for the Docker image
   steps:
     - id: fetch-base
       name: Fetch Base
@@ -53,23 +48,43 @@ spec:
           repo_name: ${{ parameters.repoName }}
           repo_owner: ${{ parameters.repoOwner }}
           branch_name: ${{ parameters.branchName }}
-          commit_sha: ${{ parameters.commitSha }}
 
-    - id: push
-      name: Push to Repository
-      action: publish:gitlab
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
       input:
-        repoUrl: 'gitlab.com/your-namespace/your-repo'
+        repoUrl: ${{ parameters.repoUrl }}
+        description: 'Repo for GCP trigger'
         defaultBranch: main
-        token: ${{ secrets.GITLAB_TOKEN }}
         files:
           - src: ./content/
             dest: /
 
+    - id: github-action
+      name: Trigger GitHub Actions
+      action: github:actions:dispatch
+      input:
+        workflowId: terraform.yml
+        repoUrl: ${{ parameters.repoUrl }}
+        branchOrTag: main
+        inputs:
+          trigger_name: ${{ parameters.triggerName }}
+          project_id: ${{ parameters.projectId }}
+          repo_name: ${{ parameters.repoName }}
+          repo_owner: ${{ parameters.repoOwner }}
+          branch_name: ${{ parameters.branchName }}
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
   output:
     links:
       - title: Repository
-        url: ${{ steps['push'].output.remoteUrl }}
+        url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog
         icon: catalog
         entityRef: ${{ steps['register'].output.entityRef }}

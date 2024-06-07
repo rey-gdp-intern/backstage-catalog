@@ -1,28 +1,3 @@
-resource "google_cloudbuild_trigger" "trigger" {
-  name    = var.trigger_name
-  project = var.project_id
-
-  github {
-    name    = var.repo_name
-    owner   = var.repo_owner
-    push {
-      branch = var.branch_name
-    }
-  }
-
-  build {
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["build", "-t", "gcr.io/${var.project_id}/${var.repo_name}:${var.commit_sha}", "."]
-    }
-    step {
-      name = "gcr.io/cloud-builders/docker"
-      args = ["push", "gcr.io/${var.project_id}/${var.repo_name}:${var.commit_sha}"]
-    }
-    images = ["gcr.io/${var.project_id}/${var.repo_name}:${var.commit_sha}"]
-  }
-}
-
 variable "project_id" {
   description = "GCP Project ID"
 }
@@ -40,9 +15,34 @@ variable "repo_owner" {
 }
 
 variable "branch_name" {
-  description = "Branch name to trigger builds"
+  description = "Branch name to trigger the build"
 }
 
-variable "commit_sha" {
-  description = "Commit SHA for the Docker image"
+resource "google_cloudbuild_trigger" "trigger" {
+  project  = var.project_id
+  name     = var.trigger_name
+  github {
+    owner = var.repo_owner
+    name  = var.repo_name
+    push {
+      branch = var.branch_name
+    }
+  }
+  build {
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = [
+        "build",
+        "-t", "gcr.io/${var.project_id}/${var.repo_name}:latest",
+        "."
+      ]
+    }
+    step {
+      name = "gcr.io/cloud-builders/docker"
+      args = [
+        "push", "gcr.io/${var.project_id}/${var.repo_name}:latest"
+      ]
+    }
+    images = ["gcr.io/${var.project_id}/${var.repo_name}:latest"]
+  }
 }
