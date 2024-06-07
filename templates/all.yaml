@@ -8,3 +8,4 @@ spec:
   targets:
     - ./golang/template.yaml
     - ./next/template.yaml
+    - ./terraform/gcp-trigger/template.yaml
