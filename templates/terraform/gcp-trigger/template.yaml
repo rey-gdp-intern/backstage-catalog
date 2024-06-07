@@ -1,0 +1,79 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gcp-trigger
+  title: GCP Trigger
+  description: Template to create GCP Cloud Build triggers using Terraform
+spec:
+  owner: user:guest
+  type: service
+  parameters:
+    - title: Trigger Information
+      required:
+        - triggerName
+        - projectId
+        - repoName
+        - repoOwner
+        - branchName
+        - commitSha
+      properties:
+        triggerName:
+          title: Trigger Name
+          type: string
+          description: Name of the Cloud Build trigger
+        projectId:
+          title: GCP Project ID
+          type: string
+          description: Your Google Cloud Project ID
+        repoName:
+          title: Repository Name
+          type: string
+          description: Name of the GitHub repository
+        repoOwner:
+          title: Repository Owner
+          type: string
+          description: Owner of the GitHub repository
+        branchName:
+          title: Branch Name
+          type: string
+          description: Branch to trigger the build
+        commitSha:
+          title: Commit SHA
+          type: string
+          description: Commit SHA for the Docker image
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          trigger_name: ${{ parameters.triggerName }}
+          project_id: ${{ parameters.projectId }}
+          repo_name: ${{ parameters.repoName }}
+          repo_owner: ${{ parameters.repoOwner }}
+          branch_name: ${{ parameters.branchName }}
+          commit_sha: ${{ parameters.commitSha }}
+
+    - id: terraform
+      name: Run Terraform
+      action: terraform:execute
+      input:
+        workspace: default
+        backendType: local
+        planFile: "terraform.tfplan"
+
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['fetch-base'].output.repoContentsUrl }}
+        catalogInfoPath: "/catalog-info.yaml"
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['fetch-base'].output.repoContentsUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
