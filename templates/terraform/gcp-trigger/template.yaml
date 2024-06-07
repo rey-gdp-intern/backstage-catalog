@@ -14,7 +14,6 @@ spec:
         - projectId
         - repoName
         - repoOwner
-        - branchName
         - repoUrl
       properties:
         triggerName:
@@ -37,12 +36,6 @@ spec:
           description: Select the repository owner
           enum:
             - rey-gdp-intern
-        branchName:
-          title: Branch Name
-          type: string
-          description: Select the branch name to trigger the build
-          enum:
-            - main
         repoUrl:
           title: Repository Location
           type: string
@@ -62,7 +55,6 @@ spec:
           project_id: ${{ parameters.projectId }}
           repo_name: ${{ parameters.repoName }}
           repo_owner: ${{ parameters.repoOwner }}
-          branch_name: ${{ parameters.branchName }}
 
     - id: publish
       name: Publish to GitHub
@@ -81,13 +73,12 @@ spec:
       input:
         workflowId: terraform.yml
         repoUrl: ${{ parameters.repoUrl }}
-        branchOrTag: main
-        inputs:
+        branchOrTagName: main
+        workflowInputs:
           trigger_name: ${{ parameters.triggerName }}
           project_id: ${{ parameters.projectId }}
           repo_name: ${{ parameters.repoName }}
           repo_owner: ${{ parameters.repoOwner }}
-          branch_name: ${{ parameters.branchName }}
 
     - id: register
       name: Register Component
