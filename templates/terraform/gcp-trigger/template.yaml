@@ -15,6 +15,7 @@ spec:
         - repoName
         - repoOwner
         - branchName
+        - repoUrl
       properties:
         triggerName:
           title: Trigger Name
@@ -23,7 +24,9 @@ spec:
         projectId:
           title: GCP Project ID
           type: string
-          description: Your Google Cloud Project ID
+          description: Select your Google Cloud Project ID
+          enum:
+            - intern-infra
         repoName:
           title: Repository Name
           type: string
@@ -31,11 +34,21 @@ spec:
         repoOwner:
           title: Repository Owner
           type: string
-          description: Owner of the repository
+          description: Select the repository owner
+          enum:
+            - rey-gdp-intern
         branchName:
           title: Branch Name
           type: string
-          description: Branch name to trigger the build
+          description: Select the branch name to trigger the build
+          enum:
+            - main
+        repoUrl:
+          title: Repository URL
+          type: string
+          description: URL of the repository where the template will be published
+          default: 'github.com'
+
   steps:
     - id: fetch-base
       name: Fetch Base
