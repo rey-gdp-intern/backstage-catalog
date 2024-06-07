@@ -20,7 +20,7 @@ spec:
         triggerName:
           title: Trigger Name
           type: string
-          description: Name of the Cloud Build trigger
+          description: Name of the Cloud Build trigger new
         projectId:
           title: GCP Project ID
           type: string
