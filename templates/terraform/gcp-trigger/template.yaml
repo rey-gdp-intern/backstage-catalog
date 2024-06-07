@@ -20,7 +20,7 @@ spec:
         triggerName:
           title: Trigger Name
           type: string
-          description: Name of the Cloud Build trigger new
+          description: Name of the Cloud Build trigger
         projectId:
           title: GCP Project ID
           type: string
@@ -44,10 +44,12 @@ spec:
           enum:
             - main
         repoUrl:
-          title: Repository URL
+          title: Repository Location
           type: string
-          description: URL of the repository where the template will be published
-          default: 'github.com'
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
 
   steps:
     - id: fetch-base
