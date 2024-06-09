@@ -58,7 +58,7 @@ spec:
         triggerName: ${{ parameters.name }}-trigger
         projectId: ${{ parameters.projectId }}
         repoName: ${{ parameters.repoUrl.split('/').pop().replace(".git", "") }}
-        repoOwner: ${{ parameters.repoUrl.split("/")[3] }}
+        repoOwner: ${{ parameters.repoOwner }}
         branchName: 'main'
 
     - id: register
