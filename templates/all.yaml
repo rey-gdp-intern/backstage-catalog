@@ -4,7 +4,6 @@ metadata:
   name: project-templates
   description: A template
 spec:
-  type: file
   targets:
     - ./golang/template.yaml
     - ./next/template.yaml

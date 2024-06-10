@@ -4,6 +4,5 @@ metadata:
   name: acme
   description: A collection of all group and users
 spec:
-  type: file
   targets:
     - ./group/all.yaml
