@@ -7,14 +7,14 @@ on:
       - main
       - staging
       - develop
-      - develop/*
+      - develop_*
   pull_request:
     branches:
       - master
       - main
       - staging
       - develop
-      - develop/*
+      - develop_*
     types: [closed]
 
 env:
@@ -36,21 +36,21 @@ jobs:
         id: set-env
         run: |
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          if [[ "${{ github.ref_name }}" == develop/* ]]; then
-            SUFFIX=$(echo "${{ github.ref_name }}" | sed 's|^develop/||')
+          if [[ "${{ github.ref_name }}" == develop_* ]]; then
+            SUFFIX=$(echo "${{ github.ref_name }}" | sed 's|^develop_||')
             PROJECT_NAME="${{ github.event.repository.name }}-$SUFFIX"
             BRANCH="develop"
-            IMAGE_TAG="${{ env.BRANCH }}-$SUFFIX-:$SHORT_SHA"
+            IMAGE_TAG="develop-$SUFFIX:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           elif [[ "${{ github.ref_name }}" == "develop" ]]; then
             PROJECT_NAME="${{ github.event.repository.name }}"
             BRANCH="develop"
-            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
+            IMAGE_TAG="develop:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           else
             PROJECT_NAME="${{ github.event.repository.name }}"
             BRANCH="${{ github.ref_name == 'refs/heads/staging' && 'staging' || 'production' }}"
-            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
+            IMAGE_TAG="$BRANCH:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           fi
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
