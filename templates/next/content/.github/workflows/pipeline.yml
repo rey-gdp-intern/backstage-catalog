@@ -16,12 +16,9 @@ on:
 env:
   PROJECT_NAME: ${{ github.event.repository.name }}
   PORT: 3000
-  BRANCH: ${{ github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
   REGISTRY_REPO: antrein
-
   GCP_REGION: asia-southeast1
   GCP_ZONE: asia-southeast1-a
-
   AWS_REGION: asia-southeast-1
 
 jobs:
@@ -32,22 +29,24 @@ jobs:
       IMAGE_TAG: ${{ steps.set-env.outputs.IMAGE_TAG }}
       IMAGE_NAME: ${{ steps.set-env.outputs.IMAGE_NAME }}
       SHORT_SHA: ${{ steps.set-env.outputs.SHORT_SHA }}
-      BRANCH: ${{ env.BRANCH }}
+      BRANCH: ${{ steps.set-env.outputs.BRANCH }}
     steps:
       - name: Set environment variables
         id: set-env
         run: |
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
-          IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_OUTPUT
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          BRANCH=$(if [[ "${{ github.ref }}" == 'refs/heads/staging' ]]; then echo 'staging'; else echo 'production'; fi)
+          IMAGE_TAG="${BRANCH}:${SHORT_SHA}"
+          IMAGE_NAME="reyshazni/${{ github.event.repository.name }}:${IMAGE_TAG}"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "BRANCH=${BRANCH}" >> $GITHUB_OUTPUT
 
   dockerize-and-push:
     needs: setup-environment
-    environment: ${{ needs.setup-environment.outputs.BRANCH }}
     runs-on: ubuntu-latest
+    environment: ${{ needs.setup-environment.outputs.BRANCH }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -64,11 +63,9 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
   deploy-to-server-gcp:
     needs: [setup-environment, dockerize-and-push]
-    if: vars.CLOUD_PLATFORM == 'gcp'
     runs-on: ubuntu-latest
     environment: ${{ needs.setup-environment.outputs.BRANCH }}
     steps:
@@ -79,39 +76,40 @@ jobs:
         env: 
           IMAGE_NAME: ${{ needs.setup-environment.outputs.IMAGE_NAME }}
           SHORT_SHA: ${{ needs.setup-environment.outputs.SHORT_SHA }}
+          BRANCH: ${{ needs.setup-environment.outputs.BRANCH }}
         run: |
-          sed -i "s|<PROJECT_NAME>|${{ env.PROJECT_NAME }}|g" k8s/${{ env.BRANCH }}.yml
-          sed -i "s|<IMAGE_NAME>|${{ env.IMAGE_NAME }}|g" k8s/${{ env.BRANCH }}.yml
-          sed -i "s|<VERSION>|${{ env.SHORT_SHA }}|g" k8s/${{ env.BRANCH }}.yml
-          sed -i "s|<PORT>|${{ env.PORT }}|g" k8s/${{ env.BRANCH }}.yml
-          cat k8s/${{ env.BRANCH }}.yml
+          sed -i "s|<PROJECT_NAME>|${{ env.PROJECT_NAME }}|g" k8s/${BRANCH}.yml
+          sed -i "s|<IMAGE_NAME>|${IMAGE_NAME}|g" k8s/${BRANCH}.yml
+          sed -i "s|<VERSION>|${SHORT_SHA}|g" k8s/${BRANCH}.yml
+          sed -i "s|<PORT>|${{ env.PORT }}|g" k8s/${BRANCH}.yml
+          cat k8s/${BRANCH}.yml
 
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ vars.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Connect to cluster
         uses: google-github-actions/get-gke-credentials@v2
         with:
-          cluster_name: ${{ vars.GCP_CLUSTER_NAME }}
+          cluster_name: ${{ secrets.GCP_CLUSTER_NAME }}
           location: ${{ env.GCP_ZONE }}
 
       - name: Deploy
         run: |
-          kubectl apply -f k8s/${{ env.BRANCH }}.yml
+          kubectl apply -f k8s/${BRANCH}.yml
 
       - name: Push YAML to another GitHub repo
         if: github.ref != 'refs/heads/staging'
         env:
           GIT_USER: reyshazni
-          GIT_TOKEN: ${{ vars.GIT_PAT }}
+          GIT_TOKEN: ${{ secrets.GIT_PAT }}
           GIT_EMAIL: reyshazni@gmail.com
         run: |
           git config --global user.email ${GIT_EMAIL}
           git config --global user.name ${GIT_USER}
           git clone https://github.com/antrein/prod-yml.git
-          cp ./k8s/${{ env.BRANCH }}.yml ./prod-yml/${{ vars.CONFIG_BE_MODE }}/${{ env.PROJECT_NAME }}.yml
+          cp ./k8s/${BRANCH}.yml ./prod-yml/${{ secrets.CONFIG_BE_MODE }}/${{ env.PROJECT_NAME }}.yml
           cd ./prod-yml
           git add .
           git diff --quiet && git diff --staged --quiet || git commit -am 'sync version'
