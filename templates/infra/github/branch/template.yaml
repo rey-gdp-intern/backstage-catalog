@@ -16,11 +16,6 @@ spec:
         - sourceBranch
         - newBranch
       properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
         repoOwner:
           title: Repo Owner
           type: string
@@ -43,7 +38,7 @@ spec:
       name: Create GitHub Branch
       action: custom:github:branch:create
       input:
-        repoUrl: ${{ 'https://github.com/' + parameters.repoOwner + '/' + parameters.repoName }}
+        repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.repoName }}'
         sourceBranch: ${{ parameters.sourceBranch }}
         newBranch: ${{ parameters.newBranch }}
 
