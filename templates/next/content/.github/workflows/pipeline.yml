@@ -20,6 +20,7 @@ on:
 env:
   PORT: 3000
   REGISTRY_REPO: antrein
+  BRANCH: ${{ contains(github.ref_name, 'develop_') && 'develop' || (github.ref_name == 'develop' && 'develop' || (github.ref_name == 'staging' && 'staging' || 'production')) }}
 
 jobs:
   setup-environment:
@@ -29,7 +30,6 @@ jobs:
       IMAGE_TAG: ${{ steps.set-env.outputs.IMAGE_TAG }}
       IMAGE_NAME: ${{ steps.set-env.outputs.IMAGE_NAME }}
       SHORT_SHA: ${{ steps.set-env.outputs.SHORT_SHA }}
-      BRANCH: ${{ steps.set-env.outputs.BRANCH }}
       PROJECT_NAME: ${{ steps.set-env.outputs.PROJECT_NAME }}
     steps:
       - name: Set environment variables
@@ -39,18 +39,16 @@ jobs:
           if [[ "${{ github.ref_name }}" == develop_* ]]; then
             SUFFIX=$(echo "${{ github.ref_name }}" | sed 's|^develop_||')
             PROJECT_NAME="${{ github.event.repository.name }}-$SUFFIX"
-            BRANCH="develop"
-            IMAGE_TAG="develop-$SUFFIX:$SHORT_SHA"
+            IMAGE_TAG="${{ env.BRANCH }}-$SUFFIX:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           elif [[ "${{ github.ref_name }}" == "develop" ]]; then
             PROJECT_NAME="${{ github.event.repository.name }}"
-            BRANCH="develop"
-            IMAGE_TAG="develop:$SHORT_SHA"
+            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           else
             PROJECT_NAME="${{ github.event.repository.name }}"
             BRANCH="${{ github.ref_name == 'refs/heads/staging' && 'staging' || 'production' }}"
-            IMAGE_TAG="$BRANCH:$SHORT_SHA"
+            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           fi
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
