@@ -6,5 +6,5 @@ metadata:
     github.com/project-slug: 'rey-gdp-intern/test-next'
 spec:
   type: service
-  owner: user:sre
+  owner: group:sre
   lifecycle: experimental
