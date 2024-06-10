@@ -6,17 +6,19 @@ on:
       - master
       - main
       - staging
+      - develop*
   pull_request:
     branches:
       - master
       - main
       - staging
+      - develop*
     types: [closed]
 
 env:
-  PROJECT_NAME: ${{ github.event.repository.name }}
+  PROJECT_NAME: ${{ github.ref_name }}
   PORT: 3000
-  BRANCH: ${{ github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
+  BRANCH: ${{ contains(github.ref_name, 'develop') && 'develop' || (github.ref_name == 'refs/heads/staging' && 'staging' || 'production') }}
   REGISTRY_REPO: antrein
 
 jobs:
@@ -52,20 +54,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # - name: Create secret
-      #   run: |
-      #     echo '${{ vars.ENV }}' > ./files/secrets/secrets.config.json
-
-      # - name: Add Config
-      #   run: |
-      #     jq --arg be_mode "${{ vars.CONFIG_BE_MODE }}" --arg infra_mode "${{ vars.CONFIG_INFRA_MODE }}" \
-      #     '. + {"be_mode": $be_mode, "infra_mode": $infra_mode}' ./files/secrets/secrets.config.json > ./files/secrets/secrets.tmp.json \
-      #     && mv ./files/secrets/secrets.tmp.json ./files/secrets/secrets.config.json
-
-      # - name: Test secret
-      #   run: |
-      #     cat ./files/secrets/secrets.config.json
 
       - name: Build and push Docker Image
         env: 
