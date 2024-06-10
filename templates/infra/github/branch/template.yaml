@@ -41,7 +41,7 @@ spec:
   steps:
     - id: create-branch
       name: Create GitHub Branch
-      action: custom:github:create-branch
+      action: custom:github:branch:create
       input:
         repoUrl: ${{ 'https://github.com/' + parameters.repoOwner + '/' + parameters.repoName }}
         sourceBranch: ${{ parameters.sourceBranch }}
