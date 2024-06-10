@@ -38,8 +38,8 @@ jobs:
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           if [[ "${{ github.ref_name }}" == develop_* ]]; then
             SUFFIX=$(echo "${{ github.ref_name }}" | sed 's|^develop_||')
-            PROJECT_NAME="${{ github.event.repository.name }}-$SUFFIX"
-            IMAGE_TAG="${{ env.BRANCH }}-$SUFFIX:$SHORT_SHA"
+            PROJECT_NAME="${{ github.event.repository.name }}_$SUFFIX"
+            IMAGE_TAG="${{ env.BRANCH }}_$SUFFIX:$SHORT_SHA"
             IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
           elif [[ "${{ github.ref_name }}" == "develop" ]]; then
             PROJECT_NAME="${{ github.event.repository.name }}"
