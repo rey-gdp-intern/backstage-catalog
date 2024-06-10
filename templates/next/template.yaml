@@ -42,6 +42,8 @@ spec:
         url: ./content
         values:
           name: ${{ parameters.name }}
+        copyWithoutTemplating:
+          - './content/.github/workflows/pipeline.yml'
 
     - id: publish
       name: Publish
