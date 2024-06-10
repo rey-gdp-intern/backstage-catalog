@@ -45,4 +45,4 @@ spec:
   output:
     links:
       - title: Repository
-        url: ${{ 'https://github.com/' + parameters.repoOwner + '/' + parameters.repoName }}
+        url: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.repoName }}'
