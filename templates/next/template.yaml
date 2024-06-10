@@ -11,21 +11,17 @@ spec:
     - title: Fill in some steps
       required:
         - name
-        - projectId
+        - repoOwner
       properties:
         name:
           title: Name
           type: string
           description: Unique name of the component
           ui:autofocus: true
-        projectId:
-          title: GCP Project ID
-          type: string
-          description: Your Google Cloud Project ID
         repoOwner:
           title: Repo Owner
           type: string
-          description: Your Github Repository Owner
+          description: Github Repository Owner/Group
 
   steps:
     - id: fetch-base
