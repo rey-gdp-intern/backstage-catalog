@@ -6,19 +6,19 @@ on:
       - master
       - main
       - staging
-      - develop*
+      - develop
+      - develop/*
   pull_request:
     branches:
       - master
       - main
       - staging
-      - develop*
+      - develop
+      - develop/*
     types: [closed]
 
 env:
-  PROJECT_NAME: ${{ github.ref_name }}
   PORT: 3000
-  BRANCH: ${{ contains(github.ref_name, 'develop') && 'develop' || (github.ref_name == 'refs/heads/staging' && 'staging' || 'production') }}
   REGISTRY_REPO: antrein
 
 jobs:
@@ -29,17 +29,35 @@ jobs:
       IMAGE_TAG: ${{ steps.set-env.outputs.IMAGE_TAG }}
       IMAGE_NAME: ${{ steps.set-env.outputs.IMAGE_NAME }}
       SHORT_SHA: ${{ steps.set-env.outputs.SHORT_SHA }}
-      BRANCH: ${{ env.BRANCH }}
+      BRANCH: ${{ steps.set-env.outputs.BRANCH }}
+      PROJECT_NAME: ${{ steps.set-env.outputs.PROJECT_NAME }}
     steps:
       - name: Set environment variables
         id: set-env
         run: |
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
-          IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
+          if [[ "${{ github.ref_name }}" == develop/* ]]; then
+            SUFFIX=$(echo "${{ github.ref_name }}" | sed 's|^develop/||')
+            PROJECT_NAME="${{ github.event.repository.name }}-$SUFFIX"
+            BRANCH="develop"
+            IMAGE_TAG="${{ env.BRANCH }}-$SUFFIX-:$SHORT_SHA"
+            IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
+          elif [[ "${{ github.ref_name }}" == "develop" ]]; then
+            PROJECT_NAME="${{ github.event.repository.name }}"
+            BRANCH="develop"
+            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
+            IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
+          else
+            PROJECT_NAME="${{ github.event.repository.name }}"
+            BRANCH="${{ github.ref_name == 'refs/heads/staging' && 'staging' || 'production' }}"
+            IMAGE_TAG="${{ env.BRANCH }}:$SHORT_SHA"
+            IMAGE_NAME="reyshazni/${{ github.event.repository.name }}-$IMAGE_TAG"
+          fi
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_OUTPUT
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_OUTPUT
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
 
   dockerize-and-push:
     needs: setup-environment
@@ -75,6 +93,7 @@ jobs:
         env: 
           IMAGE_NAME: ${{ needs.setup-environment.outputs.IMAGE_NAME }}
           SHORT_SHA: ${{ needs.setup-environment.outputs.SHORT_SHA }}
+          PROJECT_NAME: ${{ needs.setup-environment.outputs.PROJECT_NAME }}
         run: |
           sed -i "s|<PROJECT_NAME>|${{ env.PROJECT_NAME }}|g" k8s/${{ env.BRANCH }}.yml
           sed -i "s|<IMAGE_NAME>|${{ env.IMAGE_NAME }}|g" k8s/${{ env.BRANCH }}.yml
