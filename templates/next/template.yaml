@@ -31,6 +31,7 @@ spec:
         url: ./content
         values:
           name: ${{ parameters.name }}
+          repoOwner: ${{ parameters.repoOwner }}
         copyWithoutTemplating:
           - '.github/workflows/pipeline.yml'
 
