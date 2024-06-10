@@ -1,0 +1,53 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: branch-deployment-template
+  title: Branch Deployment
+  description: Template for Branch Deployment
+spec:
+  owner: group:sre
+  type: service
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+        - repoOwner
+        - repoName
+        - sourceBranch
+        - newBranch
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+        repoOwner:
+          title: Repo Owner
+          type: string
+          description: GitHub Repository Owner/Group
+        repoName:
+          title: Repository Name
+          type: string
+          description: The name of the repository
+        sourceBranch:
+          title: Source Branch
+          type: string
+          description: The branch to branch from (e.g., "main")
+        newBranch:
+          title: New Branch
+          type: string
+          description: The new branch name (e.g., "feature/new-branch")
+
+  steps:
+    - id: create-branch
+      name: Create GitHub Branch
+      action: custom:github:create-branch
+      input:
+        repoUrl: ${{ 'https://github.com/' + parameters.repoOwner + '/' + parameters.repoName }}
+        sourceBranch: ${{ parameters.sourceBranch }}
+        newBranch: ${{ parameters.newBranch }}
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ 'https://github.com/' + parameters.repoOwner + '/' + parameters.repoName }}
