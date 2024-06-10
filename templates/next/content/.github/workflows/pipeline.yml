@@ -82,7 +82,6 @@ jobs:
 
   deploy-to-server-gcp:
     needs: [setup-environment, dockerize-and-push]
-    if: vars.CLOUD_PLATFORM == 'gcp'
     runs-on: ubuntu-latest
     environment: ${{ needs.setup-environment.outputs.BRANCH }}
     steps:
