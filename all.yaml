@@ -4,6 +4,7 @@ metadata:
   name: all
   description: All backstage collections
 spec:
+  type: file
   targets:
     - ./acme/all.yaml
     - ./templates/all.yaml

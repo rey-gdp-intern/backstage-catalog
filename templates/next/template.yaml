@@ -26,13 +26,6 @@ spec:
           title: Repo Owner
           type: string
           description: Your Github Repository Owner
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
 
   steps:
     - id: fetch-base
@@ -51,7 +44,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.name }}'
         repoVisibility: public
 
     - id: register
