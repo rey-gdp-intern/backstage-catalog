@@ -50,16 +50,7 @@ spec:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
-
-    - id: create-gcb-trigger
-      name: Create GCB Trigger
-      action: custom:cloudBuildTrigger:create
-      input:
-        triggerName: ${{ parameters.name }}-trigger
-        projectId: ${{ parameters.projectId }}
-        repoName: ${{ parameters.repoUrl.split('/').pop().replace(".git", "") }}
-        repoOwner: ${{ parameters.repoOwner }}
-        branchName: 'main'
+        repoVisibility: public
 
     - id: register
       name: Register
