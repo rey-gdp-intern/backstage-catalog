@@ -1,4 +1,4 @@
-name: Golang CI/CD Pipeline
+name: Next CI/CD Pipeline
 
 on:
   push:
@@ -18,11 +18,6 @@ env:
   PORT: 3000
   BRANCH: ${{ github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
   REGISTRY_REPO: antrein
-
-  GCP_REGION: asia-southeast1
-  GCP_ZONE: asia-southeast1-a
-
-  AWS_REGION: asia-southeast-1
 
 jobs:
   setup-environment:
@@ -108,7 +103,7 @@ jobs:
         uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: ${{ vars.GCP_CLUSTER_NAME }}
-          location: ${{ env.GCP_ZONE }}
+          location: ${{ vars.GCP_ZONE }}
 
       - name: Deploy
         run: |
