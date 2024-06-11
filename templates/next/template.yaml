@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: next-template
   title: Next Template
-  description: Template for simple Next.js service
+  description: Template for simple Next.js service with GCB
 spec:
   owner: user:guest
   type: service
@@ -43,6 +43,15 @@ spec:
         description: This is ${{ parameters.name }}
         repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.name }}'
         repoVisibility: public
+
+    - id: create-gcp-trigger
+      name: Create GCP Trigger
+      action: custom:gcp:trigger:create
+      input:
+        projectId: "intern-infra"
+        repoOwner: ${{ parameters.repoOwner }}
+        repoName: ${{ parameters.name }}
+        region: "asia-east1"
 
     - id: register
       name: Register
