@@ -46,7 +46,7 @@ spec:
 
     - id: create-gcp-trigger
       name: Create GCP Trigger
-      action: custom:gcp:trigger:create
+      action: custom:gcp:cloudbuild:trigger:create
       input:
         projectId: "intern-infra"
         repoOwner: ${{ parameters.repoOwner }}
