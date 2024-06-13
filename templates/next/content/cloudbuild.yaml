@@ -27,6 +27,7 @@ steps:
     args:
       - '-c'
       - |
+          ls
           PROJECT=$$(gcloud config get-value core/project)
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
@@ -41,9 +42,9 @@ steps:
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
-  _PROJECT: intern-infra
-  _CLUSTER: sandbox
-  _ZONE: asia-southeast2-a
+  _PROJECT: antrein-ta
+  _CLUSTER: antrein
+  _ZONE: asia-southeast1-a
   _IMAGE_NAME: '${_PROJECT}-${REPO_NAME}-${BRANCH_NAME}'
   _PORT: '3000'
 

@@ -45,7 +45,7 @@ substitutions:
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
   _IMAGE_NAME: '${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
-  _PORT: '8080'
+  _PORT: '3000'
 
 availableSecrets:
   secretManager:
