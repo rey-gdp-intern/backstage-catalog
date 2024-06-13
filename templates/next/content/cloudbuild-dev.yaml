@@ -1,27 +1,25 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    id: DockerLogin
+  - id: docker-login
+    name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
     args: ['-c', 'docker login --username=$$USERNAME --password=$$PASSWORD']
     secretEnv: ['USERNAME', 'PASSWORD']
 
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Build
-    args:
-    - 'build'
-    - '-t'
-    - '${_IMAGE_NAME}:${SHORT_SHA}'
-    - '.'
+  - id: docker-build
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker build -t $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA} .']
+    secretEnv: ['USERNAME']
     waitFor:
-      - "DockerLogin"
-
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Push
-    args:
-    - 'push'
-    - '${_IMAGE_NAME}:${SHORT_SHA}'
+      - "docker-login"
+    
+  - id: docker-push
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}']
+    secretEnv: ['USERNAME']
     waitFor:
-      - "Build"
+      - "docker-build"
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Deploy
@@ -39,14 +37,14 @@ steps:
           sed -i 's|<PORT>|${_PORT}|g' /k8s/production.yml
           kubectl apply -f /k8s/production.yml
     waitFor:
-      - "Push"
+      - "docker-push"
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
   _PROJECT: intern-infra
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
-  _IMAGE_NAME: '${_REGISTRY_URL}/${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
+  _IMAGE_NAME: '${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
   _PORT: '8080'
 
 availableSecrets:
