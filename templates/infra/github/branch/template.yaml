@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: branch-deployment-template
   title: Branch Deployment
-  description: Template for Branch Deployment
+  description: Template for develop deployment v1.1
 spec:
   owner: group:sre
   type: service
@@ -28,18 +28,19 @@ spec:
         sourceBranch:
           title: Source Branch
           type: string
-          description: The branch to branch from (e.g., "main")
+          description: The branch to branch from (e.g., "master")
         newBranch:
           title: New Branch
           type: string
-          description: The new branch name (e.g., "feature/new-branch")
+          description: The new branch name (e.g., "develop_feat-1")
 
   steps:
     - id: create-branch
       name: Create GitHub Branch
       action: custom:github:branch:create
       input:
-        repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.repoName }}'
+        repoOwner: ${{ parameters.repoOwner }}
+        repoName: ${{ parameters.repoName }}
         sourceBranch: ${{ parameters.sourceBranch }}
         newBranch: ${{ parameters.newBranch }}
 
