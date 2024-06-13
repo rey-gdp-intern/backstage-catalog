@@ -1,5 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
+    id: DockerLogin
     entrypoint: 'bash'
     args: ['-c', 'docker login --username=$$USERNAME --password=$$PASSWORD']
     secretEnv: ['USERNAME', 'PASSWORD']
@@ -46,7 +47,7 @@ substitutions:
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
   _IMAGE_NAME: '${_REGISTRY_URL}/${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
-  _PORT: '3000'
+  _PORT: '8080'
 
 availableSecrets:
   secretManager:
