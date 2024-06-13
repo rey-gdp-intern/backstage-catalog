@@ -51,9 +51,9 @@ steps:
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
-  _PROJECT: antrein-ta
-  _CLUSTER: antrein
-  _ZONE: asia-southeast1-a
+  _PROJECT: intern-infra
+  _CLUSTER: sandbox
+  _ZONE: asia-southeast2-a
   _IMAGE_NAME: '${_PROJECT}-${REPO_NAME}-${BRANCH_NAME}'
   _PORT: '3000'
 
