@@ -3,9 +3,8 @@ kind: Component
 metadata:
   name: ${{ values.name | dump }}
   annotations:
-    github.com/project-slug: '${{ values.repoOwner }}/${{ values.name }}'
     google.com/cloudbuild-project-slug: '${{ values.projectId }}'
-    google.com/cloudbuild-repo-name: my-backstage
+    google.com/cloudbuild-repo-name: ${{ values.name }}
 spec:
   type: service
   owner: group:sre

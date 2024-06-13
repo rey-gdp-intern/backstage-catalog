@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: next-template
   title: Next Template
-  description: Template for simple Next.js service with GCB v1.2
+  description: Template for simple Next.js service with GCB v1.1
 spec:
   owner: user:guest
   type: service
@@ -12,6 +12,7 @@ spec:
       required:
         - name
         - repoOwner
+        - projectId
       properties:
         name:
           title: Name
@@ -22,6 +23,13 @@ spec:
           title: Repo Owner
           type: string
           description: Github Repository Owner/Group
+        projectId:
+          title: Project ID
+          type: string
+          description: GCP Project ID
+          enum:
+            - intern-infra
+            - antrein-ta
 
   steps:
     - id: fetch-base
@@ -32,7 +40,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           repoOwner: ${{ parameters.repoOwner }}
-          projectId: 'intern-infra'
+          projectId: ${{ parameters.projectId }}
         copyWithoutTemplating:
           - '.github/workflows/pipeline.yml'
 
@@ -49,7 +57,7 @@ spec:
       name: Create GCP Trigger
       action: custom:gcp:cloudbuild:trigger:create
       input:
-        projectId: "intern-infra"
+        projectId: ${{ parameters.projectId }}
         repoOwner: ${{ parameters.repoOwner }}
         repoName: ${{ parameters.name }}
         region: "asia-east1"
