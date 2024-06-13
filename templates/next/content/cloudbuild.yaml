@@ -1,20 +1,5 @@
 steps:
-  - id: docker-login
-    name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
-    args: ['-c', 'docker login --username=$$USERNAME --password=$$PASSWORD']
-    secretEnv: ['USERNAME', 'PASSWORD']
-
-  - id: docker-build
-    name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
-    args: ['-c', 'docker build -t $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA} .']
-    secretEnv: ['USERNAME']
-    waitFor:
-      - "docker-login"
-    
-  steps:
-  - id: docker-push
+  - id: docker-build-and-push
     name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
     args:
@@ -27,6 +12,15 @@ steps:
             exit 1
           fi
           echo "Docker login successful"
+
+          echo "Building Docker image..."
+          docker build -t $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA} .
+          if [ $? -ne 0 ]; then
+            echo "Docker build failed"
+            exit 1
+          fi
+          echo "Docker build successful"
+
           echo "Pushing Docker image..."
           docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}
           if [ $? -ne 0 ]; then
@@ -35,9 +29,6 @@ steps:
           fi
           echo "Docker push successful"
     secretEnv: ['USERNAME', 'PASSWORD']
-    waitFor:
-      - "docker-build"
-
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: gke-deploy
@@ -55,7 +46,7 @@ steps:
           sed -i 's|<PORT>|${_PORT}|g' /k8s/production.yml
           kubectl apply -f /k8s/production.yml
     waitFor:
-      - "docker-push"
+      - "docker-build-and-push"
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
@@ -63,7 +54,7 @@ substitutions:
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
   _IMAGE_NAME: '${_PROJECT}-$REPO_NAME-${BRANCH_NAME}'
-  _PORT: '8080'
+  _PORT: '3000'
 
 availableSecrets:
   secretManager:
