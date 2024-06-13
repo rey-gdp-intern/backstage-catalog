@@ -13,16 +13,34 @@ steps:
     waitFor:
       - "docker-login"
     
+  steps:
   - id: docker-push
     name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
-    args: ['-c', 'docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}']
-    secretEnv: ['USERNAME']
+    args:
+      - '-c'
+      - |
+          echo "Logging into Docker..."
+          docker login --username=$$USERNAME --password=$$PASSWORD
+          if [ $? -ne 0 ]; then
+            echo "Docker login failed"
+            exit 1
+          fi
+          echo "Docker login successful"
+          echo "Pushing Docker image..."
+          docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}
+          if [ $? -ne 0 ]; then
+            echo "Docker push failed"
+            exit 1
+          fi
+          echo "Docker push successful"
+    secretEnv: ['USERNAME', 'PASSWORD']
     waitFor:
       - "docker-build"
 
+
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: Deploy
+    id: gke-deploy
     entrypoint: 'bash'
     args:
       - '-c'
@@ -44,7 +62,7 @@ substitutions:
   _PROJECT: intern-infra
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
-  _IMAGE_NAME: '${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
+  _IMAGE_NAME: '${_PROJECT}-$REPO_NAME-${BRANCH_NAME}'
   _PORT: '8080'
 
 availableSecrets:
