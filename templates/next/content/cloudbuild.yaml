@@ -1,37 +1,28 @@
 steps:
-  - id: docker-build-and-push
+  - id: docker-login
     name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-          echo "Logging into Docker..."
-          docker login --username=$$USERNAME --password=$$PASSWORD
-          if [ $? -ne 0 ]; then
-            echo "Docker login failed"
-            exit 1
-          fi
-          echo "Docker login successful"
-
-          echo "Building Docker image..."
-          docker build -t $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA} .
-          if [ $? -ne 0 ]; then
-            echo "Docker build failed"
-            exit 1
-          fi
-          echo "Docker build successful"
-
-          echo "Pushing Docker image..."
-          docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}
-          if [ $? -ne 0 ]; then
-            echo "Docker push failed"
-            exit 1
-          fi
-          echo "Docker push successful"
+    args: ['-c', 'docker login --username=$$USERNAME --password=$$PASSWORD']
     secretEnv: ['USERNAME', 'PASSWORD']
 
+  - id: docker-build
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker build -t $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA} .']
+    secretEnv: ['USERNAME']
+    waitFor:
+      - "docker-login"
+    
+  - id: docker-push
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker push $$USERNAME/${_IMAGE_NAME}:${SHORT_SHA}']
+    secretEnv: ['USERNAME']
+    waitFor:
+      - "docker-build"
+
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: gke-deploy
+    id: Deploy
     entrypoint: 'bash'
     args:
       - '-c'
@@ -46,14 +37,14 @@ steps:
           sed -i 's|<PORT>|${_PORT}|g' /k8s/production.yml
           kubectl apply -f /k8s/production.yml
     waitFor:
-      - "docker-build-and-push"
+      - "docker-push"
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
   _PROJECT: intern-infra
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
-  _IMAGE_NAME: '${_PROJECT}-$REPO_NAME-${BRANCH_NAME}'
+  _IMAGE_NAME: '${_PROJECT}-${REPO_NAME}-${BRANCH_NAME}'
   _PORT: '3000'
 
 availableSecrets:
