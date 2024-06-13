@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: next-template
   title: Next Template
-  description: Template for simple Next.js service with GCB v1.1
+  description: Template for simple Next.js service with GCB v1.2
 spec:
   owner: group:sre
   type: service

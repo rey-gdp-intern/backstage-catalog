@@ -32,11 +32,11 @@ steps:
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"
-          sed -i 's|<PROJECT_NAME>|${_PROJECT}|g' /k8s/production.yml
-          sed -i 's|<VERSION>|${SHORT_SHA}|g' /k8s/production.yml
-          sed -i 's|<IMAGE_NAME>|${_IMAGE_NAME}:${SHORT_SHA}|g' /k8s/production.yml
-          sed -i 's|<PORT>|${_PORT}|g' /k8s/production.yml
-          kubectl apply -f /k8s/production.yml
+          sed -i 's|<PROJECT_NAME>|${_PROJECT}|g' ./k8s/production.yml
+          sed -i 's|<VERSION>|${SHORT_SHA}|g' ./k8s/production.yml
+          sed -i 's|<IMAGE_NAME>|${_IMAGE_NAME}:${SHORT_SHA}|g' ./k8s/production.yml
+          sed -i 's|<PORT>|${_PORT}|g' ./k8s/production.yml
+          kubectl apply -f ./k8s/production.yml
     waitFor:
       - "docker-push"
 
