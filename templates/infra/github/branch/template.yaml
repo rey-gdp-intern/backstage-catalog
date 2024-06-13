@@ -10,7 +10,6 @@ spec:
   parameters:
     - title: Fill in some steps
       required:
-        - name
         - repoOwner
         - repoName
         - sourceBranch
@@ -20,6 +19,8 @@ spec:
           title: Repo Owner
           type: string
           description: GitHub Repository Owner/Group
+          enum:
+            - rey-gdp-intern
         repoName:
           title: Repository Name
           type: string
