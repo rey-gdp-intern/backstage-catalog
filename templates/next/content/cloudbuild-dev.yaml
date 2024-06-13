@@ -1,0 +1,36 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    args:
+    - 'build'
+    - '-t'
+    - '${_REGISTRY_URL}/${_PROJECT}/$REPO_NAME-$BRANCH_NAME:${SHORT_SHA}'
+    - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args:
+    - 'push'
+    - '${_REGISTRY_URL}/${_PROJECT}/$REPO_NAME-$BRANCH_NAME:${SHORT_SHA}'
+    waitFor:
+      - "Build"
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Deploy
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          PROJECT=$$(gcloud config get-value core/project)          
+          gke-gcloud-auth-plugin --version
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"  
+          kubectl apply -f /k8s/production.yml
+    waitFor:
+      - "Push"
+
+substitutions:
+  _REGISTRY_URL: docker.io/reyshazni
+  _PROJECT: intern-infra
+  _CLUSTER: sandbox
+  _ZONE: asia-southeast2-a
