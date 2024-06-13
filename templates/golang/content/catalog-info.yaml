@@ -3,8 +3,9 @@ kind: Component
 metadata:
   name: ${{ values.name | dump }}
   annotations:
-    github.com/project-slug: 'template/go-test'
+    google.com/cloudbuild-project-slug: '${{ values.projectId }}'
+    google.com/cloudbuild-repo-name: ${{ values.name }}
 spec:
   type: service
-  owner: user:sre
+  owner: group:sre
   lifecycle: experimental

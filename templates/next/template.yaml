@@ -5,7 +5,7 @@ metadata:
   title: Next Template
   description: Template for simple Next.js service with GCB v1.3
 spec:
-  owner: user:guest
+  owner: group:sre
   type: service
   parameters:
     - title: Fill in some steps

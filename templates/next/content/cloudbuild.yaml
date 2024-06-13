@@ -4,14 +4,14 @@ steps:
     args:
     - 'build'
     - '-t'
-    - '${_REGISTRY_URL}/${_PROJECT}/$REPO_NAME-$BRANCH_NAME:${SHORT_SHA}'
+    - '${_IMAGE_NAME}:${SHORT_SHA}'
     - '.'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push
     args:
     - 'push'
-    - '${_REGISTRY_URL}/${_PROJECT}/$REPO_NAME-$BRANCH_NAME:${SHORT_SHA}'
+    - '${_IMAGE_NAME}:${SHORT_SHA}'
     waitFor:
       - "Build"
 
@@ -21,7 +21,7 @@ steps:
     args:
       - '-c'
       - |
-          PROJECT=$$(gcloud config get-value core/project)          
+          PROJECT=$$(gcloud config get-value core/project)
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"  
@@ -34,3 +34,4 @@ substitutions:
   _PROJECT: intern-infra
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
+  _IMAGE_NAME: '${_REGISTRY_URL}/${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
