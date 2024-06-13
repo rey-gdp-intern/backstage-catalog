@@ -4,6 +4,8 @@ metadata:
   name: ${{ values.name | dump }}
   annotations:
     github.com/project-slug: '${{ values.repoOwner }}/${{ values.name }}'
+    google.com/cloudbuild-project-slug: '${{ values.projectId }}'
+    google.com/cloudbuild-repo-name: my-backstage
 spec:
   type: service
   owner: group:sre

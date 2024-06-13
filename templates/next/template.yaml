@@ -32,6 +32,7 @@ spec:
         values:
           name: ${{ parameters.name }}
           repoOwner: ${{ parameters.repoOwner }}
+          projectId: 'intern-infra'
         copyWithoutTemplating:
           - '.github/workflows/pipeline.yml'
 
