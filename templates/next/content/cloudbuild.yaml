@@ -33,15 +33,20 @@ steps:
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"
           if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "master" ]]; then
             cp ./k8s/production.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" == "staging" ]]; then
             cp ./k8s/staging.yml ./k8s/deployment.yml
-          elif [[ "${BRANCH_NAME}" == "develop" || "${BRANCH_NAME}" == develop_* ]]; then
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" == "develop" ]]; then
             cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
+            cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}-${BRANCH_NAME}|g' ./k8s/deployment.yml
           else
             echo "Unknown branch. Exiting."
             exit 1
           fi
-          sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
           sed -i 's|<VERSION>|${SHORT_SHA}|g' ./k8s/deployment.yml
           sed -i 's|<IMAGE_NAME>|${_REGISTRY_URL}/${_IMAGE_NAME}:${SHORT_SHA}|g' ./k8s/deployment.yml
           sed -i 's|<PORT>|${_PORT}|g' ./k8s/deployment.yml

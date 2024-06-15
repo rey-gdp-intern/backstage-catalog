@@ -31,11 +31,26 @@ steps:
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"
-          sed -i 's|<PROJECT_NAME>|${_PROJECT}|g' /k8s/production.yml
-          sed -i 's|<VERSION>|${SHORT_SHA}|g' /k8s/production.yml
-          sed -i 's|<IMAGE_NAME>|${_IMAGE_NAME}:${SHORT_SHA}|g' /k8s/production.yml
-          sed -i 's|<PORT>|${_PORT}|g' /k8s/production.yml
-          kubectl apply -f /k8s/production.yml
+          if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "master" ]]; then
+            cp ./k8s/production.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" == "staging" ]]; then
+            cp ./k8s/staging.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" == "develop" ]]; then
+            cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
+            cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}-${BRANCH_NAME}|g' ./k8s/deployment.yml
+          else
+            echo "Unknown branch. Exiting."
+            exit 1
+          fi
+          sed -i 's|<VERSION>|${SHORT_SHA}|g' ./k8s/deployment.yml
+          sed -i 's|<IMAGE_NAME>|${_REGISTRY_URL}/${_IMAGE_NAME}:${SHORT_SHA}|g' ./k8s/deployment.yml
+          sed -i 's|<PORT>|${_PORT}|g' ./k8s/deployment.yml
+          kubectl apply -f ./k8s/deployment.yml
     waitFor:
       - "docker-push"
 
@@ -44,8 +59,8 @@ substitutions:
   _PROJECT: intern-infra
   _CLUSTER: sandbox
   _ZONE: asia-southeast2-a
-  _IMAGE_NAME: '${_PROJECT}-${_REPO_NAME}-${BRANCH_NAME}'
-  _PORT: '8080'
+  _IMAGE_NAME: '${_PROJECT}-${REPO_NAME}-${BRANCH_NAME}'
+  _PORT: '3000'
 
 availableSecrets:
   secretManager:
