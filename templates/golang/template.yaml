@@ -4,7 +4,7 @@ kind: Template
 metadata:
   name: golang-template
   title: Golang template
-  description: Template for golang with GCB v1.1
+  description: Template for golang with GCB v1.2
 spec:
   owner: group:sre
   type: service
