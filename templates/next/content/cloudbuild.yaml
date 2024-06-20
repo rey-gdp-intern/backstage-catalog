@@ -42,8 +42,21 @@ steps:
             sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
             cp ./k8s/develop.yml ./k8s/deployment.yml
-            _FEAT_NAME=${BRANCH_NAME#develop_}
-            sed -i 's|<PROJECT_NAME>|${REPO_NAME}-${_FEAT_NAME}|g' ./k8s/deployment.yml
+            _FEAT_NAME="${BRANCH_NAME#develop_}"
+            if [[ -z "${_FEAT_NAME}" ]]; then
+                _FEAT_NAME="default"
+            else
+                # Replace invalid characters with dashes
+                _FEAT_NAME=$(echo "${_FEAT_NAME}" | tr -cd 'a-z0-9-' | tr -s '-')
+                # Ensure it starts with a letter and ends with an alphanumeric character
+                if [[ ! "${_FEAT_NAME}" =~ ^[a-z] ]]; then
+                    _FEAT_NAME="a${_FEAT_NAME}"
+                fi
+                if [[ ! "${_FEAT_NAME}" =~ [a-z0-9]$ ]]; then
+                    _FEAT_NAME="${_FEAT_NAME}0"
+                fi
+            fi
+            PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
           else
             echo "Unknown branch. Exiting."
             exit 1
