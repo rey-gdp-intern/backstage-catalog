@@ -16,7 +16,6 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: reyshazni
-  provider: "Github"
 spec:
   profile:
     displayName: "Rey Shazni"
@@ -32,7 +31,6 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: muhammad-asn
-  provider: "Github"
 spec:
   profile:
     displayName: "Nuga"
@@ -48,7 +46,6 @@ apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: michaelact
-  provider: "Github"
 spec:
   profile:
     displayName: "Michael"
