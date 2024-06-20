@@ -56,7 +56,8 @@ steps:
                     _FEAT_NAME="${_FEAT_NAME}0"
                 fi
             fi
-            PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
+            _PROJECT_FEAT="${REPO_NAME}-${_FEAT_NAME}"
+            sed -i 's|<PROJECT_NAME>|${_PROJECT_FEAT}|g' ./k8s/deployment.yml
           else
             echo "Unknown branch. Exiting."
             exit 1
