@@ -42,8 +42,8 @@ steps:
             sed -i 's|<PROJECT_NAME>|${REPO_NAME}|g' ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
             cp ./k8s/develop.yml ./k8s/deployment.yml
-            SHORTENED_BRANCH_NAME=${BRANCH_NAME#develop_}
-            sed -i 's|<PROJECT_NAME>|${REPO_NAME}-${SHORTENED_BRANCH_NAME}|g' ./k8s/deployment.yml
+            FEAT_NAME=$(echo ${BRANCH_NAME} | sed 's/^develop_//')
+            sed -i 's|<PROJECT_NAME>|${REPO_NAME}-${FEAT_NAME}|g' ./k8s/deployment.yml
           else
             echo "Unknown branch. Exiting."
             exit 1
