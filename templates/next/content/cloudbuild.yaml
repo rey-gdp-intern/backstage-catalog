@@ -31,11 +31,11 @@ steps:
             _FEAT_NAME="${BRANCH_NAME#develop_}"
             # Ensure the feature name is valid
             _FEAT_NAME=$(echo "${_FEAT_NAME}" | tr -cd 'a-z0-9-' | tr -s '-')
-            PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
+            _PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
           else
-            PROJECT_NAME="${REPO_NAME}"
+            _PROJECT_NAME="${REPO_NAME}"
           fi
-          echo "${PROJECT_NAME}" > _PROJECT_NAME
+          echo "${_PROJECT_NAME}" > _PROJECT_NAME
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Deploy
@@ -47,7 +47,6 @@ steps:
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"
-          PROJECT_NAME=$(cat _PROJECT_NAME)
           if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "master" ]]; then
             cp ./k8s/production.yml ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" == "staging" ]]; then
