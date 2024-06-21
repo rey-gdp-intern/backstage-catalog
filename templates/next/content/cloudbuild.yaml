@@ -28,10 +28,10 @@ steps:
       - '-c'
       - |
           if [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
-            FEAT_NAME="${BRANCH_NAME#develop_}"
+            _FEAT_NAME="${BRANCH_NAME#develop_}"
             # Ensure the feature name is valid
-            FEAT_NAME=$(echo "${FEAT_NAME}" | tr -cd 'a-z0-9-' | tr -s '-')
-            PROJECT_NAME="${REPO_NAME}-${FEAT_NAME}"
+            _FEAT_NAME=$(echo "${_FEAT_NAME}" | tr -cd 'a-z0-9-' | tr -s '-')
+            PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
           else
             PROJECT_NAME="${REPO_NAME}"
           fi
