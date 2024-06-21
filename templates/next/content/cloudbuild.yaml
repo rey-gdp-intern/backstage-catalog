@@ -12,7 +12,7 @@ steps:
     secretEnv: ['USERNAME']
     waitFor:
       - "docker-login"
-    
+
   - id: docker-push
     name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
@@ -22,23 +22,7 @@ steps:
       - "docker-build"
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: set-project-name
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-          if [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
-            _FEAT_NAME="${BRANCH_NAME#develop_}"
-            # Ensure the feature name is valid
-            _FEAT_NAME=$(echo "${_FEAT_NAME}" | tr -cd 'a-z0-9-' | tr -s '-')
-            _PROJECT_NAME="${REPO_NAME}-${_FEAT_NAME}"
-          else
-            _PROJECT_NAME="${REPO_NAME}"
-          fi
-          echo "${_PROJECT_NAME}" > _PROJECT_NAME
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    id: Deploy
+    id: gke-deploy
     entrypoint: 'bash'
     args:
       - '-c'
@@ -47,20 +31,31 @@ steps:
           gke-gcloud-auth-plugin --version
           export USE_GKE_GCLOUD_AUTH_PLUGIN=True
           gcloud container clusters get-credentials "${_CLUSTER}" --project "${_PROJECT}" --zone "${_ZONE}"
+          
           if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "master" ]]; then
             cp ./k8s/production.yml ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" == "staging" ]]; then
             cp ./k8s/staging.yml ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" == "develop" ]]; then
+            cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
+          elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
+            cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}-$(echo ${BRANCH_NAME} | sed 's/^develop_//')|g" ./k8s/deployment.yml
           else
             cp ./k8s/develop.yml ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
           fi
-          sed -i 's|<PROJECT_NAME>|${_PROJECT_NAME}|g' ./k8s/deployment.yml
-          sed -i 's|<VERSION>|${SHORT_SHA}|g' ./k8s/deployment.yml
-          sed -i 's|<IMAGE_NAME>|${_REGISTRY_URL}/${_IMAGE_NAME}:${SHORT_SHA}|g' ./k8s/deployment.yml
-          sed -i 's|<PORT>|${_PORT}|g' ./k8s/deployment.yml
+
+          sed -i "s|<VERSION>|${SHORT_SHA}|g" ./k8s/deployment.yml
+          sed -i "s|<IMAGE_NAME>|${_REGISTRY_URL}/${_IMAGE_NAME}:${SHORT_SHA}|g" ./k8s/deployment.yml
+          sed -i "s|<PORT>|${_PORT}|g" ./k8s/deployment.yml
           kubectl apply -f ./k8s/deployment.yml
     waitFor:
       - "docker-push"
+
 
 substitutions:
   _REGISTRY_URL: docker.io/reyshazni
