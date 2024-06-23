@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
-  title: GCP Compute Engine VM Template
+  title: GCP Compute Engine VM Template v1.1
   description: This template generates a Terraform file for a GCP Compute Engine VM and opens a PR in GitHub
   tags:
   - gcp
@@ -83,44 +83,31 @@ spec:
         ssh_password: ${{ parameters.ssh_password }}
         repoOwner: ${{ parameters.repoOwner }}
         projectId: ${{ parameters.projectId }}
-      
-  - id: rename
-    name: Rename template files
-    action: fs:rename
-    input:
-      files:
-      - from: ./outputs/compute-engine/template.tf
-        to: ./outputs/compute-engine/${{ parameters.name }}_instance.tf
-      - from: ./outputs/compute-engine/catalog-info.yaml
-        to: ./outputs/compute-engine/${{ parameters.name }}-component-info.yaml
 
   - id: github_pr
     name: Create GitHub PR
     action: publish:github:pull-request
     input:
-      repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=terraform-repo'
-      branchName: 'feature/${{ parameters.name }}'
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
+      branchName: 'main'
       title: 'Create ${{ parameters.name }} GCP Compute Engine VM'
       description: |
-        ## Creating GCP Compute Engine VM ${{ parameters.name }}
+        ## Creating GCP Compute Engine VM
         
         This is an initial pull request to create a GCP Compute Engine VM and was created based on the Backstage template.
 
         *created by: Backstage
       sourcePath: ./outputs/compute-engine
-      targetPath: 'terraform/${{ parameters.name }}'
+      targetPath: 'resource/compute-engine/${{ parameters.name }}'
 
   - id: label_pr
     name: Add labels to PR
     action: github:issues:label
     input:
-      repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=terraform-repo'
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
       number: '${{ steps.github_pr.output.pullRequestNumber }}'
       labels:
-      - terraform
-      - created-by-backstage
-      - ${{ parameters.environment }}
-      - gcp
+      - backstage-terraform
 
   output:
     links:
