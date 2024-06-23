@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.1
+  description: Create new GCP Compute Engine via Terraform v1.2
   tags:
   - gcp
   - compute
@@ -79,7 +79,8 @@ spec:
     action: publish:github:pull-request
     input:
       repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
-      branchName: 'main'
+      targetBranchName: 'main'
+      branchName: 'develop'
       title: 'Create ${{ parameters.name }} GCP Compute Engine VM'
       description: |
         ## Creating GCP Compute Engine VM
