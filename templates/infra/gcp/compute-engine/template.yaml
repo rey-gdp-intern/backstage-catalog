@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
-  title: GCP Compute Engine VM Template v1.1
-  description: This template generates a Terraform file for a GCP Compute Engine VM and opens a PR in GitHub
+  title: GCP Compute Engine VM Template
+  description: Create new GCP Compute Engine via Terraform v1.1
   tags:
   - gcp
   - compute
