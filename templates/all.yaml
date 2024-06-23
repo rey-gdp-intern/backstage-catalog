@@ -9,3 +9,4 @@ spec:
     - ./next/template.yaml
     - ./terraform/gcp-trigger/template.yaml
     - ./infra/github/branch/template.yaml
+    - ./infra/gcp/compute-engine/template.yaml
