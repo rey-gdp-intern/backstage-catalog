@@ -1,5 +1,4 @@
 project_id      = "${{ values.projectId }}"
-region          = "${{ values.region }}"
 zone            = "${{ values.zone }}"
 resource_name   = "${{ values.resource_name }}"
 machine_type    = "${{ values.machine_type }}"
