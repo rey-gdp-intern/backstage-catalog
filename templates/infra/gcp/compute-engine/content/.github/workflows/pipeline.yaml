@@ -1,0 +1,37 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+    types: [closed]
+
+jobs:
+  terraform-ci:
+    if: github.event.pull_request.merged == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Run TFLint
+        run: tflint
+
+      - name: Terraform Plan
+        run: terraform plan
+
+  terraform-cd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Terraform Apply
+        run: terraform apply -var="gcp_credentials=${{ secrets.GCP_CREDENTIALS }}" --auto-approve
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}

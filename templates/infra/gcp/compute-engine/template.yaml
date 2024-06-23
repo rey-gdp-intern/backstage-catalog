@@ -1,0 +1,64 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: gcp-compute-engine
+  title: GCP Compute Engine
+  description: Create a new Google Compute Engine VM
+  tags:
+    - gcp
+    - compute
+    - terraform
+spec:
+  owner: sre-team
+  type: service
+  parameters:
+    - title: Project Details
+      required:
+        - project_id
+        - region
+        - vm_name
+        - machine_type
+        - zone
+        - ssh_username
+        - ssh_password
+      properties:
+        project_id:
+          title: GCP Project ID
+          type: string
+        region:
+          title: GCP Region
+          type: string
+        vm_name:
+          title: VM Name
+          type: string
+        machine_type:
+          title: Machine Type
+          type: string
+          default: e2-medium
+        zone:
+          title: GCP Zone
+          type: string
+        ssh_username:
+          title: SSH Username
+          type: string
+        ssh_password:
+          title: SSH Password
+          type: string
+  steps:
+    - id: fetch
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./content
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.vm_name }}
+        repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.vm_name }}'
+        repoVisibility: private
+        defaultBranch: main
+        files:
+          - src: ./content
+            dest: /
