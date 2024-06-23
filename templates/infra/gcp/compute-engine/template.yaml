@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.1
+  description: Create new GCP Compute Engine via Terraform v1.2
   tags:
   - gcp
   - compute
@@ -80,7 +80,7 @@ spec:
     input:
       repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
       targetBranchName: 'main'
-      branchName: 'develop'
+      branchName: 'compute-engine-${{ parameters.name }}'
       title: 'Create ${{ parameters.name }} GCP Compute Engine VM'
       description: |
         ## Creating GCP Compute Engine VM
@@ -99,6 +99,14 @@ spec:
       number: '${{ steps.github_pr.output.pullRequestNumber }}'
       labels:
       - backstage-terraform
+
+  # - id: delete-branch
+  #     name: Delete GitHub Branch
+  #     action: custom:github:branch:delete
+  #     input:
+  #       repoOwner: ${{ parameters.repoOwner }}
+  #       repoName: ${{ parameters.repoName }}
+  #       branchName: 'compute-engine-${{ parameters.name }}'
 
   output:
     links:
