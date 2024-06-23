@@ -1,64 +1,129 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: gcp-compute-engine
-  title: GCP Compute Engine
-  description: Create a new Google Compute Engine VM
+  name: create-gcp-compute-engine-vm
+  title: GCP Compute Engine VM Template
+  description: This template generates a Terraform file for a GCP Compute Engine VM and opens a PR in GitHub
   tags:
-    - gcp
-    - compute
-    - terraform
+  - gcp
+  - compute
+  - terraform
+  links:
+  - title: Documentation
+    url: https://cloud.google.com/compute/docs
+    icon: docs
 spec:
-  owner: sre-team
-  type: service
+  owner: you
+  type: gcp_resource
+
   parameters:
-    - title: Project Details
-      required:
-        - project_id
-        - region
-        - vm_name
-        - machine_type
-        - zone
-        - ssh_username
-        - ssh_password
-      properties:
-        project_id:
-          title: GCP Project ID
-          type: string
-        region:
-          title: GCP Region
-          type: string
-        vm_name:
-          title: VM Name
-          type: string
-        machine_type:
-          title: Machine Type
-          type: string
-          default: e2-medium
-        zone:
-          title: GCP Zone
-          type: string
-        ssh_username:
-          title: SSH Username
-          type: string
-        ssh_password:
-          title: SSH Password
-          type: string
+  - title: Fill in some steps
+    required:
+    - name
+    properties:
+      name:
+        title: Name
+        type: string
+        pattern: '^[a-z-]+$' # Only lower letters and "-"
+        description: Unique name for your Compute Engine VM
+      repoOwner:
+        title: Repo Owner
+        type: string
+        description: GitHub Repository Owner/Group
+        enum:
+          - rey-gdp-intern
+      projectId:
+        title: Project ID
+        type: string
+        description: GCP Project ID
+        enum:
+          - intern-infra
+          - antrein-ta
+
+  - title: Project Details
+    required:
+    - region
+    - vm_name
+    - machine_type
+    - zone
+    - ssh_username
+    - ssh_password
+    properties:
+      region:
+        title: GCP Region
+        type: string
+      machine_type:
+        title: Machine Type
+        type: string
+        default: e2-micro
+      zone:
+        title: GCP Zone
+        type: string
+      ssh_username:
+        title: SSH Username
+        type: string
+      ssh_password:
+        title: SSH Password
+        type: string
+
   steps:
-    - id: fetch
-      name: Fetch Skeleton
-      action: fetch:template
-      input:
-        url: ./content
-    - id: publish
-      name: Publish
-      action: publish:github
-      input:
-        allowedHosts: ['github.com']
-        description: This is ${{ parameters.vm_name }}
-        repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=${{ parameters.vm_name }}'
-        repoVisibility: private
-        defaultBranch: main
-        files:
-          - src: ./content
-            dest: /
+  - id: tf-template
+    name: Create a Terraform file for GCP Compute Engine VM
+    action: fetch:template
+    input:
+      url: ./content
+      targetPath: ./outputs
+      values:
+        name: ${{ parameters.name }}
+        region: ${{ parameters.region }}
+        resource_name: ${{ parameters.name }}
+        machine_type: ${{ parameters.machine_type }}
+        zone: ${{ parameters.zone }}
+        ssh_username: ${{ parameters.ssh_username }}
+        ssh_password: ${{ parameters.ssh_password }}
+        repoOwner: ${{ parameters.repoOwner }}
+        projectId: ${{ parameters.projectId }}
+      
+  - id: rename
+    name: Rename template files
+    action: fs:rename
+    input:
+      files:
+      - from: ./outputs/compute-engine/template.tf
+        to: ./outputs/compute-engine/${{ parameters.name }}_instance.tf
+      - from: ./outputs/compute-engine/catalog-info.yaml
+        to: ./outputs/compute-engine/${{ parameters.name }}-component-info.yaml
+
+  - id: github_pr
+    name: Create GitHub PR
+    action: publish:github:pull-request
+    input:
+      repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=terraform-repo'
+      branchName: 'feature/${{ parameters.name }}'
+      title: 'Create ${{ parameters.name }} GCP Compute Engine VM'
+      description: |
+        ## Creating GCP Compute Engine VM ${{ parameters.name }}
+        
+        This is an initial pull request to create a GCP Compute Engine VM and was created based on the Backstage template.
+
+        *created by: Backstage
+      sourcePath: ./outputs/compute-engine
+      targetPath: 'terraform/${{ parameters.name }}'
+
+  - id: label_pr
+    name: Add labels to PR
+    action: github:issues:label
+    input:
+      repoUrl: 'github.com?owner=${{ parameters.repoOwner }}&repo=terraform-repo'
+      number: '${{ steps.github_pr.output.pullRequestNumber }}'
+      labels:
+      - terraform
+      - created-by-backstage
+      - ${{ parameters.environment }}
+      - gcp
+
+  output:
+    links:
+    - title: 'Go to pull request'
+      url: ${{ steps.github_pr.output.remoteUrl }}
+      icon: github

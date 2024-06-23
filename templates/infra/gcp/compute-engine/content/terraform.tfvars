@@ -1,0 +1,8 @@
+project_id      = "${{ values.projectId }}"
+region          = "${{ values.region }}"
+zone            = "${{ values.zone }}"
+resource_name   = "${{ values.resource_name }}"
+machine_type    = "${{ values.machine_type }}"
+ssh_username    = "${{ values.ssh_username }}"
+ssh_password    = "${{ values.ssh_password }}"
+gcp_credentials_path  = "./../../../credentials/gcp_sa_antrein_ta.json"
