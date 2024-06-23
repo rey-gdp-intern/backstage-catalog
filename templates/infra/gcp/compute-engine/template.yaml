@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.2
+  description: Create new GCP Compute Engine via Terraform v1.3
   tags:
   - gcp
   - compute
@@ -82,12 +82,7 @@ spec:
       targetBranchName: 'main'
       branchName: 'compute-engine-${{ parameters.name }}'
       title: 'Create ${{ parameters.name }} GCP Compute Engine VM'
-      description: |
-        ## Creating GCP Compute Engine VM
-        
-        This is an initial pull request to create a GCP Compute Engine VM and was created based on the Backstage template.
-
-        *created by: Backstage
+      description: 'Pull request for new google compute engine resource'
       sourcePath: ./outputs
       targetPath: 'resource/compute-engine/${{ parameters.name }}'
 
