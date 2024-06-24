@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.3
+  description: Create new GCP Compute Engine via Terraform v1.1
   tags:
   - gcp
   - compute
@@ -120,6 +120,6 @@ spec:
 
   output:
     links:
-    - title: 'Go to pull request'
-      url: ${{ steps.github_pr.output.remoteUrl }}
-      icon: github
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
