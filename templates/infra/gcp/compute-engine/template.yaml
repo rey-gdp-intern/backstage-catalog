@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.2
+  description: Create new GCP Compute Engine via Terraform v1.1
   tags:
   - gcp
   - compute
@@ -81,7 +81,7 @@ spec:
         ssh_password: ${{ parameters.ssh_password }}
         repoOwner: ${{ parameters.repoOwner }}
         projectId: ${{ parameters.projectId }}
-        gcp_credentials_path: ${{ parameters.projectId == 'antrein-ta' ? './../../../credentials/gcp_sa_antrein_ta.json' : './../../../credentials/gcp_sa_intern_infra.json' }}
+        gcp_credentials_path: './../../../credentials/gcp_sa_${{ parameters.projectId }}.json'
 
   - id: github_pr
     name: Create GitHub PR
