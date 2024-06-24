@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: branch-deployment-template
   title: Branch Deployment
-  description: Template for develop deployment v1.3
+  description: Template for develop deployment v1.1
 spec:
   owner: group:sre
   type: service
@@ -42,6 +42,7 @@ spec:
         newBranchName:
           title: New Branch Environment
           type: string
+          pattern: '^[a-z0-9-_]+$' # Only lower letters, numbers, "-" and "_"
           description: Name of the new branch (e.g. "feat-1")
 
   steps:
@@ -52,7 +53,7 @@ spec:
         repoOwner: ${{ parameters.repoOwner }}
         repoName: ${{ parameters.repoName }}
         sourceBranch: ${{ parameters.sourceBranch }}
-        newBranch: ${{ parameters.newBranch }}
+        newBranch: '${{ parameters.newBranchEnvironment }}_${{ parameters.newBranchName }}'
 
   output:
     links:
