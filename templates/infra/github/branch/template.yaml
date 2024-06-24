@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: branch-deployment-template
   title: Branch Deployment
-  description: Template for develop deployment v1.2
+  description: Template for develop deployment v1.3
 spec:
   owner: group:sre
   type: service
@@ -37,7 +37,6 @@ spec:
           type: string
           description: Environment of the new branch
           enum:
-            - production
             - staging
             - develop
         newBranchName:
