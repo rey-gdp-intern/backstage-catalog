@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: ${{ values.component_name }}
   annotations:
-    github.com/project-slug: '${{ values.repoOwner }}/${{ values.name }}'
+    github.com/project-slug: '${{ values.repoOwner }}/terraform'
 spec:
   type: resource
   owner: group:sre
