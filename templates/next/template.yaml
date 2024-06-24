@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: next-template
   title: Next Template
-  description: Template for simple Next.js service with GCB v1.1
+  description: Template for simple Next.js service with GCB v1.2
 spec:
   owner: group:sre
   type: service
@@ -63,6 +63,24 @@ spec:
         repoOwner: ${{ parameters.repoOwner }}
         repoName: ${{ parameters.name }}
         region: "asia-east1"
+
+    - id: create-branch-staging
+      name: Create Staging Branch
+      action: custom:github:branch:create
+      input:
+        repoOwner: ${{ parameters.repoOwner }}
+        repoName: ${{ parameters.repoName }}
+        sourceBranch: 'master'
+        newBranch: 'staging'
+
+    - id: create-branch-develop
+      name: Create Develop Branch
+      action: custom:github:branch:create
+      input:
+        repoOwner: ${{ parameters.repoOwner }}
+        repoName: ${{ parameters.repoName }}
+        sourceBranch: 'master'
+        newBranch: 'develop'
 
     - id: register
       name: Register
