@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.2
+  description: Create new GCP Compute Engine via Terraform v1.1
   tags:
   - gcp
   - compute
@@ -74,6 +74,7 @@ spec:
       targetPath: ./outputs
       values:
         name: ${{ parameters.name }}
+        component_name: compute-engine-${{ parameters.name }}
         resource_name: ${{ parameters.name }}
         machine_type: ${{ parameters.machine_type }}
         zone: ${{ parameters.zone }}
