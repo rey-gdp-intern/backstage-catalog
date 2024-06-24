@@ -96,12 +96,12 @@ spec:
       - backstage-terraform
 
   - id: merge-branch
-      name: Merge GitHub Branch
-      action: custom:github:pr:merge
-      input:
-        repoOwner: rey-gdp-intern
-        repoName: terraform
-        sourceBranch: 'compute-engine-${{ parameters.name }}'
+    name: Merge GitHub Branch
+    action: custom:github:pr:merge
+    input:
+      repoOwner: rey-gdp-intern
+      repoName: terraform
+      sourceBranch: 'compute-engine-${{ parameters.name }}'
 
   - id: delete-branch
     name: Delete GitHub Branch
