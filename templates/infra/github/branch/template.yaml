@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: branch-deployment-template
   title: Branch Deployment
-  description: Template for develop deployment v1.1
+  description: Template for develop deployment v1.2
 spec:
   owner: group:sre
   type: service
@@ -13,7 +13,8 @@ spec:
         - repoOwner
         - repoName
         - sourceBranch
-        - newBranch
+        - newBranchEnvironment
+        - newBranchName
       properties:
         repoOwner:
           title: Repo Owner
