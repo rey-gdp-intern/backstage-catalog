@@ -104,19 +104,19 @@ spec:
         sourceBranch: 'compute-engine-${{ parameters.name }}'
 
   - id: delete-branch
-      name: Delete GitHub Branch
-      action: custom:github:branch:delete
-      input:
-        repoOwner: rey-gdp-intern
-        repoName: terraform
-        branchName: 'compute-engine-${{ parameters.name }}'
+    name: Delete GitHub Branch
+    action: custom:github:branch:delete
+    input:
+      repoOwner: rey-gdp-intern
+      repoName: terraform
+      branchName: 'compute-engine-${{ parameters.name }}'
 
   - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: https://github.com/rey-gdp-intern/terraform
-        catalogInfoPath: '/resource/compute-engine/${{ parameters.name }}/catalog-info.yaml'
+    name: Register
+    action: catalog:register
+    input:
+      repoContentsUrl: https://github.com/rey-gdp-intern/terraform
+      catalogInfoPath: '/resource/compute-engine/${{ parameters.name }}/catalog-info.yaml'
 
   output:
     links:
