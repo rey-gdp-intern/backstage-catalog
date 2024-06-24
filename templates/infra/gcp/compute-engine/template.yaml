@@ -123,7 +123,7 @@ spec:
     name: Register
     action: catalog:register
     input:
-      repoContentsUrl: https://github.com/rey-gdp-intern/terraform
+      repoContentsUrl: https://github.com/rey-gdp-intern/terraform/blob/main
       catalogInfoPath: '/resource/compute-engine/${{ parameters.name }}/catalog-info.yaml'
 
   output:
