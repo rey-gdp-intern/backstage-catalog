@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: branch-deployment-template
   title: Branch Deployment
-  description: Template for develop deployment v1.1
+  description: Template for develop deployment v1.2
 spec:
   owner: group:sre
   type: service
@@ -28,11 +28,22 @@ spec:
         sourceBranch:
           title: Source Branch
           type: string
-          description: The branch to branch from (e.g., "master")
-        newBranch:
-          title: New Branch
+          enum:
+            - master
+            - staging
+            - develop
+        newBranchEnvironment:
+          title: New Branch Environment
           type: string
-          description: The new branch name (e.g., "develop_feat-1")
+          description: Environment of the new branch
+          enum:
+            - production
+            - staging
+            - develop
+        newBranchName:
+          title: New Branch Environment
+          type: string
+          description: Name of the new branch (e.g. "feat-1")
 
   steps:
     - id: create-branch
