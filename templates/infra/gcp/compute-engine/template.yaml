@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.4
+  description: Create new GCP Compute Engine via Terraform v1.1
   tags:
   - gcp
   - compute
@@ -20,7 +20,7 @@ spec:
       name:
         title: Name
         type: string
-        pattern: '^[a-z-]+$' # Only lower letters and "-"
+        pattern: '^[a-z0-9-_]+$' # Only lower letters, numbers, "-" and "_"
         description: Unique name for your Compute Engine VM
       repoOwner:
         title: Repo Owner
@@ -46,10 +46,18 @@ spec:
       zone:
         title: GCP Zone
         type: string
+        enum:
+          - asia-southeast2-a
+          - asia-southeast2-b
+          - asia-southeast2-c
+
       machine_type:
         title: Machine Type
         type: string
-        default: e2-micro
+        enum:
+          - e2-micro
+          - e2-small
+          - e2-medium
       ssh_username:
         title: SSH Username
         type: string
