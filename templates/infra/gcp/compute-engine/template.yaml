@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: create-gcp-compute-engine-vm
   title: GCP Compute Engine VM Template
-  description: Create new GCP Compute Engine via Terraform v1.1
+  description: Create new GCP Compute Engine via Terraform v1.3
   tags:
   - gcp
   - compute
