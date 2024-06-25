@@ -40,7 +40,7 @@ steps:
             sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" =~ ^staging_.*$ ]]; then
             cp ./k8s/staging.yml ./k8s/deployment.yml
-            sed -i "s|<PROJECT_NAME>|${REPO_NAME}-$(echo ${BRANCH_NAME} | sed 's/^staging//')|g" ./k8s/deployment.yml
+            sed -i "s|<PROJECT_NAME>|${REPO_NAME}-$(echo ${BRANCH_NAME} | sed 's/^staging_//')|g" ./k8s/deployment.yml
           elif [[ "${BRANCH_NAME}" == "develop" ]]; then
             cp ./k8s/develop.yml ./k8s/deployment.yml
             sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
