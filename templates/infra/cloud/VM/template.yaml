@@ -1,0 +1,171 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: create-vm
+  title: Create VM Template
+  description: Create new VM via Terraform
+  tags:
+  - vm
+  - terraform
+spec:
+  owner: group:sre
+  type: resource
+
+  parameters:
+  - title: Fill in some steps
+    required:
+    - name
+    - cloud_provider
+    properties:
+      name:
+        title: Name
+        type: string
+        pattern: '^[a-z0-9-_]+$' # Only lower letters, numbers, "-" and "_"
+        description: Unique name for your Compute Engine VM
+      cloud_provider:
+        title: Cloud Provider
+        type: string
+        enum:
+          - gcp
+          - aws
+          - azure
+        description: Choose the cloud provider
+      repoOwner:
+        title: Repo Owner
+        type: string
+        description: GitHub Repository Owner/Group
+        enum:
+          - rey-gdp-intern
+      projectId:
+        title: Project ID
+        type: string
+        description: GCP Project ID (for GCP)
+        enum:
+          - intern-infra
+          - antrein-ta
+
+  - title: Project Details
+    required:
+    - region
+    - machine_type
+    - ssh_public_key
+    properties:
+      region:
+        title: Region
+        type: string
+        dependencies:
+          cloud_provider:
+            oneOf:
+              - properties:
+                  cloud_provider:
+                    enum: [gcp]
+                  region:
+                    enum:
+                      - asia-southeast2 # Jakarta
+                      - asia-southeast1 # Singapore
+                      - us-east1        # US East 1
+              - properties:
+                  cloud_provider:
+                    enum: [aws]
+                  region:
+                    enum:
+                      - ap-southeast-3  # Jakarta
+                      - ap-southeast-1  # Singapore
+                      - us-east-1       # US East 1
+              - properties:
+                  cloud_provider:
+                    enum: [azure]
+                  region:
+                    enum:
+                      - southeastasia   # Singapore
+                      - eastus          # US East 1
+
+      machine_type:
+        title: Machine Type
+        type: string
+        dependencies:
+          cloud_provider:
+            oneOf:
+              - properties:
+                  cloud_provider:
+                    enum: [gcp]
+                  machine_type:
+                    enum:
+                      - e2-micro
+                      - e2-small
+                      - e2-medium
+              - properties:
+                  cloud_provider:
+                    enum: [aws]
+                  machine_type:
+                    enum:
+                      - t2.micro
+                      - t2.small
+                      - t2.medium
+              - properties:
+                  cloud_provider:
+                    enum: [azure]
+                  machine_type:
+                    enum:
+                      - Standard_B1ls
+                      - Standard_B1ms
+                      - Standard_B2s
+
+      ssh_public_key:
+        title: SSH Public Key
+        type: string
+        description: Provide the SSH public key
+
+  steps:
+  - id: tf-template
+    name: Create a Terraform file for Compute Engine VM
+    action: fetch:template
+    input:
+      url: ./content
+      targetPath: ./outputs
+      values:
+        name: ${{ parameters.name }}
+        component_name: compute-engine-${{ parameters.name }}
+        resource_name: ${{ parameters.name }}
+        machine_type: ${{ parameters.machine_type }}
+        region: ${{ parameters.region }}
+        ssh_public_key: ${{ parameters.ssh_public_key }}
+        repoOwner: ${{ parameters.repoOwner }}
+        projectId: ${{ parameters.projectId }}
+        gcp_credentials_path: './../../../credentials/gcp_sa_${{ parameters.projectId }}.json'
+        cloud_provider: ${{ parameters.cloud_provider }}
+
+  - id: github_pr
+    name: Create GitHub PR
+    action: publish:github:pull-request
+    input:
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
+      targetBranchName: 'main'
+      branchName: 'compute-engine-${{ parameters.name }}'
+      title: 'Create ${{ parameters.name }} Compute Engine VM on ${{ parameters.cloud_provider }}'
+      description: 'Pull request for new compute engine resource on ${{ parameters.cloud_provider }}'
+      sourcePath: ./outputs
+      targetPath: 'resource/compute-engine/${{ parameters.name }}'
+
+  - id: label_pr
+    name: Add labels to PR
+    action: github:issues:label
+    input:
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
+      number: '${{ steps.github_pr.output.pullRequestNumber }}'
+      labels:
+      - backstage-terraform
+
+  - id: merge-branch
+    name: Merge GitHub Branch
+    action: custom:github:pr:merge
+    input:
+      repoOwner: rey-gdp-intern
+      repoName: terraform
+      sourceBranch: 'compute-engine-${{ parameters.name }}'
+
+  output:
+    links:
+      - title: Merge Request
+        icon: github
+        url: 'https://github.com/rey-gdp-intern/terraform/pull/${{ steps.github_pr.output.pullRequestNumber }}'

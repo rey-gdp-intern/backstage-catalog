@@ -1,0 +1,7 @@
+cloud_provider = "${{ values.cloud_provider }}"
+project_id      = "${{ values.projectId }}"
+region          = "${{ values.region }}"
+resource_name   = "${{ values.resource_name }}"
+machine_type    = "${{ values.machine_type }}"
+ssh_public_key  = "${{ values.ssh_public_key }}"
+gcp_credentials_path  = "${{ values.gcp_credentials_path }}"

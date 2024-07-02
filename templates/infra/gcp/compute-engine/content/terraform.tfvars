@@ -1,7 +1,0 @@
-project_id      = "${{ values.projectId }}"
-zone            = "${{ values.zone }}"
-resource_name   = "${{ values.resource_name }}"
-machine_type    = "${{ values.machine_type }}"
-ssh_username    = "${{ values.ssh_username }}"
-ssh_password    = "${{ values.ssh_password }}"
-gcp_credentials_path  = "${{ values.gcp_credentials_path }}"

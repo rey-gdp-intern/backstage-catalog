@@ -8,4 +8,4 @@ spec:
     - ./golang/template.yaml
     - ./next/template.yaml
     - ./infra/github/branch/template.yaml
-    - ./infra/gcp/compute-engine/template.yaml
+    - ./infra/cloud/VM/template.yaml

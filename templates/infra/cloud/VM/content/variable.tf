@@ -1,10 +1,15 @@
+variable "cloud_provider" {
+  description = "The cloud provider to deploy to"
+  type        = string
+}
+
 variable "project_id" {
   description = "The project ID to deploy to"
   type        = string
 }
 
-variable "zone" {
-  description = "The zone to deploy resources"
+variable "region" {
+  description = "The region to deploy resources"
   type        = string
 }
 
@@ -18,17 +23,12 @@ variable "machine_type" {
   type        = string
 }
 
-variable "ssh_username" {
-  description = "The SSH username"
-  type        = string
-}
-
-variable "ssh_password" {
-  description = "The SSH password"
+variable "ssh_public_key" {
+  description = "The SSH public key"
   type        = string
 }
 
 variable "gcp_credentials_path" {
-  description = "The path of gcp credentials"
+  description = "The path of GCP credentials"
   type        = string
 }
