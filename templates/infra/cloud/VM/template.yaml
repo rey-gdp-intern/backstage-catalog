@@ -139,7 +139,7 @@ spec:
     name: Create GitHub PR
     action: publish:github:pull-request
     input:
-      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform-atlantis'
       targetBranchName: 'main'
       branchName: 'compute-engine-${{ parameters.name }}'
       title: 'Create ${{ parameters.name }} Compute Engine VM on ${{ parameters.cloud_provider }}'
@@ -151,18 +151,10 @@ spec:
     name: Add labels to PR
     action: github:issues:label
     input:
-      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform'
+      repoUrl: 'github.com?owner=rey-gdp-intern&repo=terraform-atlantis'
       number: '${{ steps.github_pr.output.pullRequestNumber }}'
       labels:
       - backstage-terraform
-
-  - id: merge-branch
-    name: Merge GitHub Branch
-    action: custom:github:pr:merge
-    input:
-      repoOwner: rey-gdp-intern
-      repoName: terraform
-      sourceBranch: 'compute-engine-${{ parameters.name }}'
 
   output:
     links:

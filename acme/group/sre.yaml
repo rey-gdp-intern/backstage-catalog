@@ -19,7 +19,7 @@ metadata:
 spec:
   profile:
     displayName: "Rey Shazni"
-    email: "reyshazni@gmail.com"
+    email: "rey.shazni@gmail.com"
     picture: "https://github.com/reyshazni.png"
   memberOf: [sre]
   links:
