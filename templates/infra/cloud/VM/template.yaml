@@ -121,8 +121,8 @@ spec:
     name: Create a Terraform file for Compute Engine VM
     action: fetch:template
     input:
-      url: ./content
-      targetPath: ./outputs
+      url: ./content/main.tf
+      targetPath: ./outputs/main.tf
       values:
         name: ${{ parameters.name }}
         component_name: compute-engine-${{ parameters.name }}
@@ -144,8 +144,8 @@ spec:
       branchName: 'compute-engine-${{ parameters.name }}'
       title: 'Create ${{ parameters.name }} Compute Engine VM on ${{ parameters.cloud_provider }}'
       description: 'Pull request for new compute engine resource on ${{ parameters.cloud_provider }}'
-      sourcePath: ./outputs
-      targetPath: 'resource/compute-engine/${{ parameters.name }}'
+      sourcePath: ./outputs/main.tf
+      targetPath: 'gcp/asia-southeast1/vm/resources/${{ parameters.name }}.tf'
 
   - id: label_pr
     name: Add labels to PR
