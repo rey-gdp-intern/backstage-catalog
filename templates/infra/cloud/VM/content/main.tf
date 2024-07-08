@@ -1,5 +1,5 @@
 module "vm_${{ values.resource_name }}" {
-  source  = "./modules"
+  source  = "./../modules"
   project_id = "${{ values.projectId }}"
   region      = "${{ values.region }}"
   resource_name = "${{ values.resource_name }}"
