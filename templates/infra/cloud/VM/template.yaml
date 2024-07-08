@@ -167,4 +167,4 @@ spec:
     links:
       - title: Merge Request
         icon: github
-        url: 'https://github.com/rey-gdp-intern/terraform/pull/${{ steps.github_pr.output.pullRequestNumber }}'
+        url: 'https://github.com/rey-gdp-intern/terraform-atlantis/pull/${{ steps.github_pr.output.pullRequestNumber }}'
