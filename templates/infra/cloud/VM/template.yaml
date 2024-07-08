@@ -48,6 +48,7 @@ spec:
     required:
     - region
     - machine_type
+    - ssh_username
     - ssh_public_key
     properties:
       region:
@@ -111,6 +112,11 @@ spec:
                       - Standard_B1ms
                       - Standard_B2s
 
+      ssh_username:
+        title: SSH Username
+        type: string
+        description: Provide the SSH username
+
       ssh_public_key:
         title: SSH Public Key
         type: string
@@ -129,6 +135,7 @@ spec:
         resource_name: ${{ parameters.name }}
         machine_type: ${{ parameters.machine_type }}
         region: ${{ parameters.region }}
+        ssh_username: ${{ parameters.ssh_username }}
         ssh_public_key: ${{ parameters.ssh_public_key }}
         repoOwner: ${{ parameters.repoOwner }}
         projectId: ${{ parameters.projectId }}

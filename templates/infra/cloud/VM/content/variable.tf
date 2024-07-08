@@ -23,6 +23,11 @@ variable "machine_type" {
   type        = string
 }
 
+variable "ssh_username" {
+  description = "The SSH username"
+  type        = string
+}
+
 variable "ssh_public_key" {
   description = "The SSH public key"
   type        = string
