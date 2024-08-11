@@ -22,49 +22,71 @@ steps:
       - "docker-build"
 
   - id: deploy-to-eks
-    name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
+    name: 'alpine'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
+        # Install necessary packages
+        apk add --no-cache curl bash aws-cli kubectl
+
         # Setup AWS credentials
         mkdir -p ~/.aws
+        echo "[default]" > ~/.aws/config
+        echo "region = ${_AWS_REGION}" >> ~/.aws/config
+        echo "output = json" >> ~/.aws/config
+        echo "[profile gl-exploration]" >> ~/.aws/config
+        echo "role_arn = ${_AWS_ROLE_ARN}" >> ~/.aws/config
+        echo "source_profile = default" >> ~/.aws/config
+        echo "skip_region_validation = true" >> ~/.aws/config
         echo "[default]" > ~/.aws/credentials
         echo "aws_access_key_id = $$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-        echo "aws_secret_access_key = $$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+        echo "aws_secret_access_key = $$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+        echo "[gl-exploration]" >> ~/.aws/credentials
+        echo "aws_access_key_id = $$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+        echo "aws_secret_access_key = $$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
 
-        echo "[default]" > ~/.aws/config
-        echo "region = $${_AWS_REGION}" >> ~/.aws/config
-        echo "output = json" >> ~/.aws/config
+        aws configure list
 
-        # Update kubeconfig
-        aws eks update-kubeconfig --name $${_CLUSTER_AWS} --region $${_AWS_REGION}
+        # Verify variables
+        echo "REPO_NAME=${REPO_NAME}"
+        echo "SHORT_SHA=${SHORT_SHA}"
+        echo "_REGISTRY_URL=${_REGISTRY_URL}"
+        echo "_PORT=${_PORT}"
+
+        # Update kubeconfig to connect to EKS
+        aws eks update-kubeconfig --name ${_AWS_CLUSTER} --region ${_AWS_REGION}
 
         # Determine the correct Kubernetes manifest to use based on the branch name
-        if [[ "$${BRANCH_NAME}" == "main" || "$${BRANCH_NAME}" == "master" ]]; then
+        if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "master" ]]; then
           cp ./k8s/production.yml ./k8s/deployment.yml
-        elif [[ "$${BRANCH_NAME}" == "staging" ]]; then
+        elif [[ "${BRANCH_NAME}" == "staging" ]]; then
           cp ./k8s/staging.yml ./k8s/deployment.yml
-        elif [[ "$${BRANCH_NAME}" =~ ^staging_.*$ ]]; then
+        elif [[ "${BRANCH_NAME}" =~ ^staging_.*$ ]]; then
           cp ./k8s/staging.yml ./k8s/deployment.yml
-        elif [[ "$${BRANCH_NAME}" == "develop" ]]; then
+        elif [[ "${BRANCH_NAME}" == "develop" ]]; then
           cp ./k8s/develop.yml ./k8s/deployment.yml
-        elif [[ "$${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
+        elif [[ "${BRANCH_NAME}" =~ ^develop_.*$ ]]; then
           cp ./k8s/develop.yml ./k8s/deployment.yml
         else
           cp ./k8s/develop.yml ./k8s/deployment.yml
         fi
 
-        # Replace placeholders in the Kubernetes deployment manifest
-        sed -i "s|<PROJECT_NAME>|$${REPO_NAME}|g" ./k8s/deployment.yml
-        sed -i "s|<VERSION>|$${SHORT_SHA}|g" ./k8s/deployment.yml
-        sed -i "s|<IMAGE_NAME>|$${_REGISTRY_URL}/$${_IMAGE_NAME}:$${SHORT_SHA}|g" ./k8s/deployment.yml
-        sed -i "s|<PORT>|$${_PORT}|g" ./k8s/deployment.yml
+        # Update deployment manifest with the current build details
+        sed -i "s|<PROJECT_NAME>|${REPO_NAME}|g" ./k8s/deployment.yml
+        sed -i "s|<VERSION>|${SHORT_SHA}|g" ./k8s/deployment.yml
+        sed -i "s|<IMAGE_NAME>|${_REGISTRY_URL}/${_IMAGE_NAME}:${SHORT_SHA}|g" ./k8s/deployment.yml
+        sed -i "s|<PORT>|${_PORT}|g" ./k8s/deployment.yml
+
+        # Check deployment file
+        cat ./k8s/deployment.yml
 
         # Deploy to EKS
         kubectl apply -f ./k8s/deployment.yml
     secretEnv: ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
     env:
+      - 'AWS_DEFAULT_REGION=${_AWS_REGION}'
+      - 'AWS_PROFILE=gl-exploration'
       - 'CLOUDSDK_CORE_DISABLE_PROMPTS=1'
     waitFor:
       - "docker-push"
@@ -76,8 +98,9 @@ substitutions:
   _ZONE: asia-southeast2-a
   _IMAGE_NAME: '${_PROJECT}-${REPO_NAME}-${BRANCH_NAME}'
   _PORT: '3000'
-  _CLUSTER_AWS: sandbox-intern
+  _AWS_CLUSTER: sandbox-intern
   _AWS_REGION: us-east-1
+  _AWS_ROLE_ARN: arn:aws:iam::302546992452:user/glair-exploration-rey-intern
 
 availableSecrets:
   secretManager:
