@@ -63,7 +63,6 @@ metadata:
     alb.ingress.kubernetes.io/group.name: backstage-catalog
 spec:
   ingressClassName: alb
-  group: backstage-catalog
   rules:
     - host: <PROJECT_NAME>.glair.id
       http:
