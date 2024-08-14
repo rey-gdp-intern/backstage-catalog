@@ -34,7 +34,7 @@ metadata:
 spec:
   profile:
     displayName: "Nuga"
-    email: "muhammad-asn@gmail.com"
+    email: "muhammad.a.s.nugroho@gdplabs.id"
     picture: "https://github.com/muhammad-asn.png"
   memberOf: [sre]
   links:
@@ -54,5 +54,20 @@ spec:
   memberOf: [sre]
   links:
     - url: "https://github.com/michaelact"
+      title: "GitHub Profile"
+      icon: "github"
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: halasson
+spec:
+  profile:
+    displayName: "Halasson"
+    email: "halasson.m.simatupang@gdplabs.id"
+    picture: "https://github.com/halasson.png"
+  memberOf: [sre]
+  links:
+    - url: "https://github.com/halasson"
       title: "GitHub Profile"
       icon: "github"
