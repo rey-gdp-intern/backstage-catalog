@@ -11,7 +11,7 @@ metadata:
       url: https://${{ values.name }}-develop.glair.id
   annotations:
     google.com/cloudbuild-project-slug: '${{ values.projectId }}'
-    google.com/cloudbuild-repo-name: rey-gdp-intern/${{ values.name }}
+    google.com/cloudbuild-repo-name: '${{ values.name }}'
     google.com/cloudbuild-location: 'asia-east1'
 spec:
   type: service
