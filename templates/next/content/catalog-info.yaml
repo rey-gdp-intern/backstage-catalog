@@ -2,6 +2,13 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{ values.name | dump }}
+  links:
+    - title: Production
+      url: https://${{ values.name }}.glair.id
+    - title: Staging
+      url: https://${{ values.name }}-staging.glair.id
+    - title: Develop
+      url: https://${{ values.name }}-develop.glair.id
   annotations:
     google.com/cloudbuild-project-slug: '${{ values.projectId }}'
     google.com/cloudbuild-repo-name: rey-gdp-intern/${{ values.name }}

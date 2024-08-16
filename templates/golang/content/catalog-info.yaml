@@ -2,6 +2,16 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: ${{ values.name | dump }}
+  links:
+    - title: My Dashboard
+      icon: dashboard
+      url: https://dashboard.example.com
+    - title: My Dashboard
+      icon: dashboard
+      url: https://dashboard.example.com
+    - title: My Dashboard
+      icon: dashboard
+      url: https://dashboard.example.com
   annotations:
     google.com/cloudbuild-project-slug: '${{ values.projectId }}'
     google.com/cloudbuild-repo-name: ${{ values.name }}
