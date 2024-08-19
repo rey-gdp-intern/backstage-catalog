@@ -128,19 +128,15 @@ spec:
     action: fetch:template
     input:
       url: ./content/main.tf
-      targetPath: ./outputs/main.tf
+      targetPath: ./outputs/${{ parameters.name }}.tf
       values:
         name: ${{ parameters.name }}
-        component_name: compute-engine-${{ parameters.name }}
         resource_name: ${{ parameters.name }}
         machine_type: ${{ parameters.machine_type }}
         region: ${{ parameters.region }}
         ssh_username: ${{ parameters.ssh_username }}
         ssh_public_key: ${{ parameters.ssh_public_key }}
-        repoOwner: ${{ parameters.repoOwner }}
         projectId: ${{ parameters.projectId }}
-        gcp_credentials_path: './../../../credentials/gcp_sa_${{ parameters.projectId }}.json'
-        cloud_provider: ${{ parameters.cloud_provider }}
 
   - id: github_pr
     name: Create GitHub PR
@@ -151,7 +147,7 @@ spec:
       branchName: 'compute-engine-${{ parameters.name }}'
       title: 'Create ${{ parameters.name }} Compute Engine VM on ${{ parameters.cloud_provider }}'
       description: 'Pull request for new compute engine resource on ${{ parameters.cloud_provider }}'
-      sourcePath: ./outputs/main.tf
+      sourcePath: ./outputs/${{ parameters.name }}.tf
       targetPath: 'gcp/asia-southeast1/vm/resources/${{ parameters.name }}.tf'
 
   - id: label_pr
