@@ -148,7 +148,7 @@ spec:
       title: 'Create ${{ parameters.name }} Compute Engine VM on ${{ parameters.cloud_provider }}'
       description: 'Pull request for new compute engine resource on ${{ parameters.cloud_provider }}'
       sourcePath: ./outputs/${{ parameters.name }}.tf
-      targetPath: 'gcp/asia-southeast1/vm/resources/${{ parameters.name }}.tf'
+      targetPath: './gcp/${{ parameters.region }}/vm/resources/${{ parameters.name }}.tf'
 
   - id: label_pr
     name: Add labels to PR
