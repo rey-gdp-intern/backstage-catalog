@@ -49,7 +49,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/load-balancer-attributes: "routing.http2.enabled=true"
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/subnets: subnet-0f5c02d65d75a1de9, subnet-0691a7915fe727aaf
+    alb.ingress.kubernetes.io/subnets: subnet-0fd1c54c57257cbed, subnet-04e9c67a5603d8281
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:302546992452:certificate/34b9610b-e100-4b40-a6c0-d8e8fb8e2f5e"
